@@ -35,7 +35,7 @@ class StaticWordsFilter : Filter {
         "прибыль",
         "в лс",
         "набираем",
-        "партнёров",
+        "партнеров",
         "дохода",
         "срочно",
         "прибыль",
@@ -57,6 +57,7 @@ class StaticWordsFilter : Filter {
                 .replace("t", "т")
                 .replace("u", "и")
                 .replace("h", "н")
+                .replace("ё", "е")
 
         immediateBlock.forEach {
             if (lowercaseMessage.contains(it)) {
