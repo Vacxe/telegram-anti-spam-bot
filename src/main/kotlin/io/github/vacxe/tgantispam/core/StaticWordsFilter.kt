@@ -4,7 +4,8 @@ import java.util.*
 
 class StaticWordsFilter : Filter {
     private val immediateBlock = setOf(
-        "usd", "доход", "дохода", "заработок", "заработока", "заработком",
+        "иsd", // "usd" transforms to "иsd", todo: split the filters
+        "доход", "дохода", "заработок", "заработка", "заработком",
     )
 
     private var blockList = immediateBlock + setOf(
@@ -20,7 +21,6 @@ class StaticWordsFilter : Filter {
         "баксов",
         "удаленную",
         "удаленная",
-        "$",
         "требуются",
         "рублей",
         "занятость",
