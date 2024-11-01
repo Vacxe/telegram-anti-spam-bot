@@ -47,7 +47,7 @@ fun main() {
                                 ChatId.fromId(Settings.adminChatId),
                                 ChatId.fromId(chatId),
                                 messageId,
-                                protectContent = true,
+                                protectContent = false,
                                 disableNotification = true
                             )
                         }
