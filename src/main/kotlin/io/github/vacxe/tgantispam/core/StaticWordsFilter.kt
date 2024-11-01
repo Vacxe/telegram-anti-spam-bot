@@ -4,13 +4,11 @@ import java.util.*
 
 class StaticWordsFilter : Filter {
     private val immediateBlock = setOf(
-        "usd", "доход", "$"
+        "usd", "доход", "дохода", "заработок", "заработока", "заработком",
     )
 
-    private var blockList = setOf(
-        "заработок",
-        "заработока",
-        "заработком",
+    private var blockList = immediateBlock + setOf(
+        "$",
         "в день",
         "в неделю",
         "в сутки",
