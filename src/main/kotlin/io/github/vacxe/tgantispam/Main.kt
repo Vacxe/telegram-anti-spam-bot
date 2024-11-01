@@ -5,7 +5,7 @@ import com.github.kotlintelegrambot.dispatch
 import com.github.kotlintelegrambot.dispatcher.*
 import com.github.kotlintelegrambot.entities.ChatId
 import com.github.kotlintelegrambot.logging.LogLevel
-import io.github.vacxe.tgantispam.core.RussianSpamFilter
+import io.github.vacxe.tgantispam.core.filters.RussianSpamFilter
 
 object Settings {
     val token = "SET_HERE"
