@@ -12,6 +12,7 @@ class RussianSpamFilterTest {
     @ParameterizedTest(name = "{index} => Message: {0}")
     @CsvFileSource(resources = ["/spam_messages.csv"],)
     fun spamTest(message: String) {
-        assertFalse(filter.filter(message))
+        val passed = filter.filter(message)
+        assertFalse(passed)
     }
 }

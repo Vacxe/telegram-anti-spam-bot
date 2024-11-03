@@ -10,7 +10,15 @@ class RussianSpamFilter : CombineFilter(
         inputTransformer = LowercaseTransformer()
     ),
     BlockFilter(
-        restrictedWords = setOf("доход", "дохода", "заработок", "заработка", "заработком"),
+        restrictedWords = setOf(
+            "доход",
+            "дохода",
+            "прибыль",
+            "заработок",
+            "заработка",
+            "заработком",
+            "прибыль"
+        ),
         inputTransformer = CombineTransformer(
             LowercaseTransformer(),
             RussianCharacterNormalizer()
@@ -22,6 +30,7 @@ class RussianSpamFilter : CombineFilter(
             "$",
             "в день",
             "в неделю",
+            "неделя",
             "в сутки",
             "за неделю",
             "дохода",
@@ -31,6 +40,7 @@ class RussianSpamFilter : CombineFilter(
             "баксов",
             "удаленную",
             "удаленная",
+            "удаленной",
             "требуются",
             "рублей",
             "занятость",
@@ -44,6 +54,8 @@ class RussianSpamFilter : CombineFilter(
             "дополнительный",
             "прибыль",
             "в лс",
+            "рублей",
+            "оплата",
             "набираем",
             "партнеров",
             "дохода",

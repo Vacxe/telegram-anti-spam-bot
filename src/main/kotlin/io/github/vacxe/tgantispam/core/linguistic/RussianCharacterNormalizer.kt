@@ -13,7 +13,6 @@ class RussianCharacterNormalizer: Transformer {
         .replace("M", "М")
         .replace("T", "Т")
         .replace("X", "Х")
-
         .replace("a", "а")
         .replace("e", "е")
         .replace("o", "о")
@@ -28,4 +27,8 @@ class RussianCharacterNormalizer: Transformer {
         .replace("m", "м")
         .replace("k", "к")
         .replace("b", "в")
+
+        .replace("ρ", "р")
+        .replace("α", "а")
+        .replace("κ", "к")
 }
