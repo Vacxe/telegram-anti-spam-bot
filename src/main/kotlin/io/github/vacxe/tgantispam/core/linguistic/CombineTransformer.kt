@@ -6,7 +6,7 @@ class CombineTransformer(vararg transformerArgs: Transformer) : Transformer {
     override fun transform(input: String): String {
         var transformedInput = input
         transformers.forEach {
-            transformedInput = it.transform(input)
+            transformedInput = it.transform(transformedInput)
         }
         return transformedInput
     }
