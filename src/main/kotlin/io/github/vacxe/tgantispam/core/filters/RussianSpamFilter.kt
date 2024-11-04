@@ -13,6 +13,7 @@ class RussianSpamFilter : CombineFilter(
         restrictedWords = setOf(
             "доход",
             "дохода",
+            "доходность",
             "прибыль",
             "заработок",
             "заработка",

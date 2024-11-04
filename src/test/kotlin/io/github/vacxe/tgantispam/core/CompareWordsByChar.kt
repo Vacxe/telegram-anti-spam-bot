@@ -11,9 +11,7 @@ class CompareWordsByChar {
         val word2 = "заработоκ"
 
         for(i in word1.indices) {
-
             assertEquals(word1[i], word2[i])
         }
     }
-
 }
