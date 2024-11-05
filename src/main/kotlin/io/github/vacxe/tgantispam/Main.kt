@@ -4,6 +4,8 @@ import com.github.kotlintelegrambot.bot
 import com.github.kotlintelegrambot.dispatch
 import com.github.kotlintelegrambot.dispatcher.*
 import com.github.kotlintelegrambot.entities.ChatId
+import com.github.kotlintelegrambot.entities.InlineKeyboardMarkup
+import com.github.kotlintelegrambot.entities.keyboard.InlineKeyboardButton
 import com.github.kotlintelegrambot.logging.LogLevel
 import io.github.vacxe.tgantispam.core.filters.RussianSpamFilter
 
@@ -27,13 +29,14 @@ fun main() {
                 if (Settings.observeChatIds.contains(chatId)) {
 
                     val username = message.from?.username
+                    val userId = message.from?.id
                     val firstName = message.from?.firstName
                     val lastName = message.from?.lastName
                     val messageId = message.messageId
                     val text = text
 
                     println("---")
-                    print("Sender: ")
+                    print("SenderID: $userId")
                     firstName?.let { print("$it ") }
                     lastName?.let { print("$it ") }
                     username?.let { println("($it)") }
@@ -48,6 +51,12 @@ fun main() {
                                 ChatId.fromId(chatId),
                                 messageId,
                                 protectContent = false,
+                                disableNotification = true
+                            )
+
+                            bot.sendMessage(
+                                ChatId.fromId(Settings.adminChatId),
+                                text = "UserId: $userId",
                                 disableNotification = true
                             )
                         }
