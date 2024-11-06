@@ -45,7 +45,7 @@ fun main() {
                     println(text)
 
                     if (!spamFilter.filter(text)) {
-                        if(Settings.adminChatId != null) {
+                        if (Settings.adminChatId != null) {
                             bot.forwardMessage(
                                 ChatId.fromId(Settings.adminChatId),
                                 ChatId.fromId(chatId),
@@ -56,11 +56,37 @@ fun main() {
 
                             bot.sendMessage(
                                 ChatId.fromId(Settings.adminChatId),
-                                text = "UserId: $userId",
+                                text = "/ban $userId",
                                 disableNotification = true
                             )
                         }
                         bot.deleteMessage(ChatId.fromId(chatId), messageId)
+                    }
+                }
+            }
+
+            command("ban") {
+                if (message.chat.id == Settings.adminChatId) {
+                    val userId = args.getOrNull(0)?.toLong()
+                    val chatId = args.getOrNull(0)?.toLong()
+                    if (userId != null) {
+                        if(chatId != null) {
+                            bot.banChatMember(chatId = ChatId.fromId(chatId), userId = userId)
+                            bot.sendMessage(
+                                ChatId.fromId(Settings.adminChatId),
+                                text = "UserId: $userId banned in $chatId",
+                                disableNotification = true
+                            )
+                        } else {
+                            Settings.observeChatIds.forEach {
+                                bot.banChatMember(chatId = ChatId.fromId(it), userId = userId)
+                                bot.sendMessage(
+                                    ChatId.fromId(Settings.adminChatId),
+                                    text = "UserId: $userId banned in $it",
+                                    disableNotification = true
+                                )
+                            }
+                        }
                     }
                 }
             }
