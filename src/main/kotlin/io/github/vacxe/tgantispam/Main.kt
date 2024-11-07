@@ -56,7 +56,7 @@ fun main() {
 
                             bot.sendMessage(
                                 ChatId.fromId(Settings.adminChatId),
-                                text = "/ban $userId",
+                                text = "$userId",
                                 disableNotification = true
                             )
                         }
@@ -68,7 +68,7 @@ fun main() {
             command("ban") {
                 if (message.chat.id == Settings.adminChatId) {
                     val userId = args.getOrNull(0)?.toLong()
-                    val chatId = args.getOrNull(0)?.toLong()
+                    val chatId = args.getOrNull(1)?.toLong()
                     if (userId != null) {
                         if(chatId != null) {
                             bot.banChatMember(chatId = ChatId.fromId(chatId), userId = userId)
