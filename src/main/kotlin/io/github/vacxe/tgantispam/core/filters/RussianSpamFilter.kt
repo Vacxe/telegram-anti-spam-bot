@@ -6,7 +6,14 @@ import io.github.vacxe.tgantispam.core.linguistic.RussianCharacterNormalizer
 
 class RussianSpamFilter : CombineFilter(
     BlockFilter(
-        restrictedWords = setOf("usd"),
+        restrictedRegex = setOf(
+            Regex("\\d+\\s*\\\$"),
+            Regex("\\\$\\s*\\d+"),
+            Regex("18\\s*\\+")
+        )
+    ),
+    BlockFilter(
+        restrictedWords = setOf("usd", "eur" /* E - latin */, "еur"/* E - cyrillic */),
         inputTransformer = LowercaseTransformer()
     ),
     BlockFilter(
@@ -18,7 +25,8 @@ class RussianSpamFilter : CombineFilter(
             "заработок",
             "заработка",
             "заработком",
-            "прибыль"
+            "прибыль",
+            "оплата"
         ),
         inputTransformer = CombineTransformer(
             LowercaseTransformer(),
@@ -29,13 +37,19 @@ class RussianSpamFilter : CombineFilter(
         maxWeight = 3,
         restrictedWords = setOf(
             "$",
-            "в день",
+            "день",
+            "долларов",
+            "приглашаю",
+            "еженедельно",
+            "пиши плюс",
+            "получай",
             "в неделю",
             "неделя",
             "в сутки",
             "за неделю",
             "дохода",
             "доходность",
+            "зарабатывать",
             "комманду",
             "команда",
             "баксов",
@@ -46,6 +60,7 @@ class RussianSpamFilter : CombineFilter(
             "рублей",
             "занятость",
             "деятельность",
+            "занятость",
             "людей",
             "люди",
             "сотрудничество",
@@ -54,17 +69,29 @@ class RussianSpamFilter : CombineFilter(
             "пишите",
             "дополнительный",
             "прибыль",
+            "оплата",
+            "без опыта",
+            "удаленная",
+            "работу",
+            "в команду",
+            "зарабатывать",
             "в лс",
             "рублей",
             "оплата",
             "набираем",
             "партнеров",
+            "ответственных",
             "дохода",
             "срочно",
             "прибыль",
             "набираю",
-            "+"
+            "+",
+            "удаленная",
+            "удаленка",
+            "долларов",
+            "анкетирования"
         ),
+        restrictedRegex = setOf(Regex("\\d+")),
         inputTransformer = CombineTransformer(
             LowercaseTransformer(),
             RussianCharacterNormalizer()
