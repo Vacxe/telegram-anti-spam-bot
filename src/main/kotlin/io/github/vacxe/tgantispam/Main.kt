@@ -41,7 +41,7 @@ fun main() {
                     println()
                     println(text)
 
-                    if (!spamFilter.isSpam(text)) {
+                    if (spamFilter.isSpam(text)) {
                         if (Settings.adminChatId != null) {
                             bot.forwardMessage(
                                 ChatId.fromId(Settings.adminChatId),
