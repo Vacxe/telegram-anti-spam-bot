@@ -25,7 +25,9 @@ class RussianSpamFilter : CombineFilter(
             "заработок",
             "заработка",
             "заработком",
-            "оплата"
+            "оплата",
+            "вознаграждением",
+            "вознаграждение"
         ).map { Regex(it) }.toSet(),
         inputTransformer = CombineTransformer(
             LowercaseTransformer(),

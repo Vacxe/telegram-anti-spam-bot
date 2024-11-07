@@ -5,6 +5,7 @@ import com.github.kotlintelegrambot.dispatch
 import com.github.kotlintelegrambot.dispatcher.*
 import com.github.kotlintelegrambot.entities.ChatId
 import com.github.kotlintelegrambot.logging.LogLevel
+import io.github.vacxe.tgantispam.core.Logger
 import io.github.vacxe.tgantispam.core.filters.RussianSpamFilter
 
 object Settings {
@@ -14,7 +15,9 @@ object Settings {
 }
 
 fun main() {
+    println("Initiation...")
     val spamFilter = RussianSpamFilter()
+    val logger = Logger()
 
     val bot = bot {
         token = Settings.token
@@ -42,6 +45,7 @@ fun main() {
                     println(text)
 
                     if (spamFilter.isSpam(text)) {
+                        logger.receivedSpamMessage(text)
                         if (Settings.adminChatId != null) {
                             bot.forwardMessage(
                                 ChatId.fromId(Settings.adminChatId),
@@ -91,4 +95,5 @@ fun main() {
     }
 
     bot.startPolling()
+    println("Bot polling...")
 }
