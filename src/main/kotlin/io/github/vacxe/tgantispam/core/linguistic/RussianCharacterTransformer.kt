@@ -1,6 +1,6 @@
 package io.github.vacxe.tgantispam.core.linguistic
 
-class RussianCharacterNormalizer: Transformer {
+class RussianCharacterTransformer: Transformer {
     override fun transform(input: String): String = input
         .replace("A", "А")
         .replace("B", "В")

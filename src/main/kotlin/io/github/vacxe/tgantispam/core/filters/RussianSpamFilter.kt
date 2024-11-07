@@ -2,22 +2,22 @@ package io.github.vacxe.tgantispam.core.filters
 
 import io.github.vacxe.tgantispam.core.linguistic.CombineTransformer
 import io.github.vacxe.tgantispam.core.linguistic.LowercaseTransformer
-import io.github.vacxe.tgantispam.core.linguistic.RussianCharacterNormalizer
+import io.github.vacxe.tgantispam.core.linguistic.RussianCharacterTransformer
 
 class RussianSpamFilter : CombineFilter(
-    BlockFilter(
-        restrictedRegex = setOf(
+    WeightFilter(
+        restrictions = setOf(
             Regex("\\d+\\s*\\\$"),
             Regex("\\\$\\s*\\d+"),
-            Regex("18\\s*\\+")
-        )
-    ),
-    BlockFilter(
-        restrictedWords = setOf("usd", "eur" /* E - latin */, "еur"/* E - cyrillic */),
+            Regex("18\\s*\\+"),
+            Regex("usd"),
+            Regex("eur"), /* E - latin */
+            Regex("еur") /* E - cyrillic */
+        ),
         inputTransformer = LowercaseTransformer()
     ),
-    BlockFilter(
-        restrictedWords = setOf(
+    WeightFilter(
+        restrictions = setOf(
             "доход",
             "дохода",
             "доходность",
@@ -25,18 +25,17 @@ class RussianSpamFilter : CombineFilter(
             "заработок",
             "заработка",
             "заработком",
-            "прибыль",
             "оплата"
-        ),
+        ).map { Regex(it) }.toSet(),
         inputTransformer = CombineTransformer(
             LowercaseTransformer(),
-            RussianCharacterNormalizer()
+            RussianCharacterTransformer()
         )
     ),
-    ConstantWeightFilter(
+    WeightFilter(
         maxWeight = 3,
-        restrictedWords = setOf(
-            "$",
+        restrictions = setOf(
+            "\\\$",
             "день",
             "долларов",
             "приглашаю",
@@ -85,16 +84,17 @@ class RussianSpamFilter : CombineFilter(
             "срочно",
             "прибыль",
             "набираю",
-            "+",
+            "\\+",
             "удаленная",
             "удаленка",
             "долларов",
-            "анкетирования"
-        ),
-        restrictedRegex = setOf(Regex("\\d+")),
+            "анкетирования",
+            "\\d+",
+            "смс"
+        ).map { Regex(it) }.toSet(),
         inputTransformer = CombineTransformer(
             LowercaseTransformer(),
-            RussianCharacterNormalizer()
+            RussianCharacterTransformer()
         )
     )
 )

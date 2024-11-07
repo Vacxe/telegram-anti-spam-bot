@@ -4,8 +4,6 @@ import com.github.kotlintelegrambot.bot
 import com.github.kotlintelegrambot.dispatch
 import com.github.kotlintelegrambot.dispatcher.*
 import com.github.kotlintelegrambot.entities.ChatId
-import com.github.kotlintelegrambot.entities.InlineKeyboardMarkup
-import com.github.kotlintelegrambot.entities.keyboard.InlineKeyboardButton
 import com.github.kotlintelegrambot.logging.LogLevel
 import io.github.vacxe.tgantispam.core.filters.RussianSpamFilter
 
@@ -27,7 +25,6 @@ fun main() {
             text {
                 val chatId = message.chat.id
                 if (Settings.observeChatIds.contains(chatId)) {
-
                     val username = message.from?.username
                     val userId = message.from?.id
                     val firstName = message.from?.firstName
@@ -44,7 +41,7 @@ fun main() {
                     println()
                     println(text)
 
-                    if (!spamFilter.filter(text)) {
+                    if (!spamFilter.isSpam(text)) {
                         if (Settings.adminChatId != null) {
                             bot.forwardMessage(
                                 ChatId.fromId(Settings.adminChatId),
