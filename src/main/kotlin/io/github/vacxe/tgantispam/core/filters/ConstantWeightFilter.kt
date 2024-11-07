@@ -6,6 +6,7 @@ import io.github.vacxe.tgantispam.core.linguistic.Transformer
 class ConstantWeightFilter(
     private val maxWeight: Int,
     private val restrictedWords: Set<String>,
+    private val restrictedRegex: Set<Regex> = emptySet(),
     private val inputTransformer: Transformer = PassTransformer()
 ) : Filter {
     override fun filter(input: String): Boolean {
@@ -21,10 +22,16 @@ class ConstantWeightFilter(
             }
         }
 
+        restrictedRegex.forEach {
+            if (it.containsMatchIn(transformedInput)) {
+                weight++
+            }
+        }
+
         val passed = weight <= maxWeight
 
-        if (!passed) {
-            println("Blocked by ConstantWeightFilter: weights sum $weight > $maxWeight -> $matches")
+        if (weight != 0) {
+            println("ConstantWeightFilter: weights sum $weight > $maxWeight -> $matches")
         }
 
         return passed
