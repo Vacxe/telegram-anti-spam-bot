@@ -7,6 +7,7 @@ class Logger(
 ) {
     init {
         if (!filteredSpamFile.exists()) {
+            filteredSpamFile.getParentFile().mkdirs()
             filteredSpamFile.createNewFile()
         }
     }
