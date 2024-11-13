@@ -5,12 +5,14 @@ import kotlin.test.assertEquals
 
 class CompareWordsByChar {
 
-   // @Test
+    //@Test
     fun compare() {
         val bad = "еur"
         val good = "eur"
 
         for(i in bad.indices) {
+            val a = bad[i].code
+            val b = good[i].code
             assertEquals(bad[i], good[i])
         }
     }

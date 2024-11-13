@@ -20,7 +20,6 @@ class RussianSpamSpamFilterTest {
     //@CsvFileSource(resources = ["/spam_messages.csv"],)
     fun regex(message: String) {
         message.lowercase().toCharArray().forEach {
-            val alphabeth = Regex("[:alpha:]")
             val text = Regex("[!-/]|[:-@]|[\\[-`]|[{-~]|\\s|\\d|[а-яА-яёЁ]|[a-zA-z]").containsMatchIn("$it")
             val emoji = Regex("(\\u00a9|\\u00ae|[\\u2000-\\u3300]|\\ud83c[\\ud000-\\udfff]|\\ud83d[\\ud000-\\udfff]|\\ud83e[\\ud000-\\udfff])").containsMatchIn("$it")
             assert(text || emoji)

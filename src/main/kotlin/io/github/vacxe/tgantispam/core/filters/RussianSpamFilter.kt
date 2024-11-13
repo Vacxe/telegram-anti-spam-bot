@@ -2,6 +2,7 @@ package io.github.vacxe.tgantispam.core.filters
 
 import io.github.vacxe.tgantispam.core.linguistic.CombineTransformer
 import io.github.vacxe.tgantispam.core.linguistic.LowercaseTransformer
+import io.github.vacxe.tgantispam.core.linguistic.RemoveUnicodeTransformer
 import io.github.vacxe.tgantispam.core.linguistic.RussianCharacterTransformer
 
 class RussianSpamFilter : CombineFilter(
@@ -27,9 +28,11 @@ class RussianSpamFilter : CombineFilter(
             "заработком",
             "оплата",
             "вознаграждением",
-            "вознаграждение"
+            "вознаграждение",
+            "есть темка"
         ).map { Regex(it) }.toSet(),
         inputTransformer = CombineTransformer(
+            RemoveUnicodeTransformer(),
             LowercaseTransformer(),
             RussianCharacterTransformer()
         )
@@ -95,6 +98,7 @@ class RussianSpamFilter : CombineFilter(
             "смс"
         ).map { Regex(it) }.toSet(),
         inputTransformer = CombineTransformer(
+            RemoveUnicodeTransformer(),
             LowercaseTransformer(),
             RussianCharacterTransformer()
         )
