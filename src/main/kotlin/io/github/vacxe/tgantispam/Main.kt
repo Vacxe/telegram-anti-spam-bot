@@ -1,5 +1,6 @@
 package io.github.vacxe.tgantispam
 
+import com.charleskorn.kaml.Yaml
 import com.github.kotlintelegrambot.bot
 import com.github.kotlintelegrambot.dispatch
 import com.github.kotlintelegrambot.dispatcher.*
@@ -7,29 +8,43 @@ import com.github.kotlintelegrambot.dispatcher.handlers.CommandHandlerEnvironmen
 import com.github.kotlintelegrambot.entities.ChatId
 import com.github.kotlintelegrambot.entities.Message
 import com.github.kotlintelegrambot.logging.LogLevel
+import io.github.vacxe.tgantispam.core.Files
 import io.github.vacxe.tgantispam.core.Logger
+import io.github.vacxe.tgantispam.core.configuration.Configuration
 import io.github.vacxe.tgantispam.core.data.Chat
 import io.github.vacxe.tgantispam.core.filters.RussianSpamFilter
+import kotlin.system.exitProcess
 
 object Settings {
-    val token = "SET_HERE"
     val chats = hashSetOf(
         Chat(
-            id = 0L,
+            id = -1001181570704L,
             enabled = true,
-            adminChatId = 0L
+            adminChatId = -1002469955497L
         )
     )
 }
 
 fun main() {
     println("Init...")
+    val configuration = if(Files.configuration.exists()) {
+        Yaml.default.decodeFromString(
+            Configuration.serializer(),
+            "Files.configuration.readText()"
+        )
+    } else {
+        println("Configuration file not found")
+        exitProcess(1)
+    }
+
+    println("Configuration loaded...")
+
     val spamFilter = RussianSpamFilter()
     val logger = Logger()
 
     val bot = bot {
-        token = Settings.token
-        timeout = 10
+        token = configuration.token
+        timeout = configuration.pollingTimeout
         logLevel = LogLevel.Error
 
         dispatch {
