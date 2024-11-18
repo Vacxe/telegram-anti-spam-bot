@@ -8,7 +8,7 @@ class LanguageInjectionFilter(private val strictLanguage: Regex) : SpamFilter {
             val strictLanguageChars = strictLanguage.findAll(word).toList().size
             val isSpam = strictLanguageChars != 0 && strictLanguageChars != word.length
             if (isSpam) {
-                val injectedSymbols = strictLanguage.replace(word, "").toCharArray()
+                val injectedSymbols = strictLanguage.replace(word, "")
                 println("Detected multi language in: $word. Injected symbols: $injectedSymbols")
             }
             isSpam

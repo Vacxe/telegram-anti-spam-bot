@@ -30,6 +30,6 @@ class LanguageInjectionFilterTest {
 
     @Test
     fun testMixed(){
-        assertTrue(filter.isSpam("RБ"))
+        assertTrue(filter.isSpam("RБA"))
     }
 }
