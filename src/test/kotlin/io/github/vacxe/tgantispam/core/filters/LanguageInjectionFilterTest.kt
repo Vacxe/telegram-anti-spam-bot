@@ -29,6 +29,11 @@ class LanguageInjectionFilterTest {
     }
 
     @Test
+    fun testRussianWithDot(){
+        assertFalse(filter.isSpam("Сотрудничество\n Опыт."))
+    }
+
+    @Test
     fun testMixed(){
         assertTrue(filter.isSpam("RБA"))
     }
