@@ -13,38 +13,42 @@ import io.github.vacxe.tgantispam.core.Logger
 import io.github.vacxe.tgantispam.core.configuration.Configuration
 import io.github.vacxe.tgantispam.core.data.Chat
 import io.github.vacxe.tgantispam.core.filters.RussianSpamFilter
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.Json
 import kotlin.system.exitProcess
 
 object Settings {
-    val chats = hashSetOf(
-        Chat(
-            id = -1001181570704L,
-            enabled = true,
-            adminChatId = -1002469955497L
-        )
-    )
+    var chats = HashSet<Chat>()
+    lateinit var configuration: Configuration
+}
+
+private val json = Json {
+    prettyPrint = true
 }
 
 fun main() {
     println("Init...")
-    val configuration = if(Files.configuration.exists()) {
+    Settings.configuration = if (Files.configuration.exists()) {
         Yaml.default.decodeFromString(
             Configuration.serializer(),
-            "Files.configuration.readText()"
+            Files.configuration.readText()
         )
     } else {
         println("Configuration file not found")
         exitProcess(1)
     }
-
     println("Configuration loaded...")
+
+    println("Loading chats configs...")
+    Settings.chats = json.decodeFromString(Files.chats.readText())
+    println("Chats configs loaded for ${Settings.chats.size} chats...")
 
     val spamFilter = RussianSpamFilter()
     val logger = Logger()
 
     val bot = bot {
-        token = configuration.token
-        timeout = configuration.pollingTimeout
+        token = Settings.configuration.token
+        timeout = Settings.configuration.pollingTimeout
         logLevel = LogLevel.Error
 
         dispatch {
@@ -180,4 +184,11 @@ fun CommandHandlerEnvironment.updateChatConfig(update: (Chat, Message) -> Chat) 
         Settings.chats.firstOrNull { it.id == message.chat.id } ?: Chat(id = message.chat.id)
     Settings.chats.remove(chatConfig)
     Settings.chats.add(update.invoke(chatConfig, message))
+
+    Files.chats.writeText(
+        json.encodeToString(
+            ListSerializer(Chat.serializer()),
+            Settings.chats.toList()
+        )
+    )
 }
