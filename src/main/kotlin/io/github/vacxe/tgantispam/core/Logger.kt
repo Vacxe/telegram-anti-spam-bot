@@ -39,7 +39,7 @@ class Logger(influxDbConfiguration: InfluxDbConfiguration? = null) {
         message: String,
     ) {
         appendMessageToFile(filteredSpamFile, message)
-        logEventToInflux(chatId, "SPAM")
+        logEventToInflux(chatId, message, "SPAM")
     }
 
     fun reportedSpamMessage(
@@ -47,11 +47,21 @@ class Logger(influxDbConfiguration: InfluxDbConfiguration? = null) {
         message: String
     ) {
         appendMessageToFile(unfilteredSpamFile, message)
-        logEventToInflux(chatId, "SPAM_REPORT")
+        logEventToInflux(
+            chatId, message,
+            "SPAM_REPORT"
+        )
     }
 
-    fun receivedMessage(chatId: Long) {
-        logEventToInflux(chatId, "MESSAGE")
+    fun receivedMessage(
+        chatId: Long,
+        message: String
+    ) {
+        logEventToInflux(
+            chatId,
+            message,
+            "MESSAGE"
+        )
     }
 
     private fun appendMessageToFile(
@@ -71,13 +81,15 @@ class Logger(influxDbConfiguration: InfluxDbConfiguration? = null) {
 
     private fun logEventToInflux(
         chatId: Long,
+        message: String,
         messageType: String
     ) {
         influxClient?.getWriteKotlinApi()?.let { api ->
             val point = Point
                 .measurement("message")
                 .addTag("chatId", chatId.toString())
-                .addField("messageType", messageType)
+                .addTag("messageType", messageType)
+                .addField("messageLength", message.length)
                 .time(Instant.now(), WritePrecision.NS)
 
             GlobalScope.launch {

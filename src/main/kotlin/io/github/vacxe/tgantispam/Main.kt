@@ -85,7 +85,10 @@ fun main() {
                         }
                         bot.deleteMessage(ChatId.fromId(chatId), messageId)
                     } else {
-                        logger.receivedMessage(message.chat.id)
+                        logger.receivedMessage(
+                            message.chat.id,
+                            text
+                        )
                     }
                 }
             }
