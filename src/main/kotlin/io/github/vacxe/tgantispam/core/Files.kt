@@ -6,7 +6,6 @@ import kotlinx.serialization.json.Json
 import java.io.File
 
 object Files {
-
     val configuration: File = File("data/config.yaml")
     val chats: File = File("data/chats.json")
 

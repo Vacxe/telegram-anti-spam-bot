@@ -1,11 +1,27 @@
 package io.github.vacxe.tgantispam.core
 
+import com.influxdb.client.domain.WritePrecision
+import com.influxdb.client.kotlin.InfluxDBClientKotlinFactory
+import com.influxdb.client.write.Point
+import io.github.vacxe.tgantispam.core.configuration.InfluxDbConfiguration
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.io.File
+import java.time.Instant
 
-class Logger(
-    private val filteredSpamFile: File = File("data/logger/filtered_spam_messages.txt"),
+class Logger(influxDbConfiguration: InfluxDbConfiguration? = null) {
+    private val filteredSpamFile: File = File("data/logger/filtered_spam_messages.txt")
     private val unfilteredSpamFile: File = File("data/logger/unfiltered_spam_messages.txt")
-) {
+
+    private val influxClient = influxDbConfiguration?.let {
+        InfluxDBClientKotlinFactory.create(
+            it.url,
+            it.token.toCharArray(),
+            it.org,
+            it.bucket
+        )
+    }
+
     init {
         if (!filteredSpamFile.exists()) {
             filteredSpamFile.getParentFile().mkdirs()
@@ -18,11 +34,30 @@ class Logger(
         }
     }
 
-    fun receivedSpamMessage(
+    fun detectedSpamMessage(
+        chatId: Long,
         message: String,
-        detected: Boolean
     ) {
-        val file = if(detected) filteredSpamFile else unfilteredSpamFile
+        appendMessageToFile(filteredSpamFile, message)
+        logEventToInflux(chatId, "SPAM")
+    }
+
+    fun reportedSpamMessage(
+        chatId: Long,
+        message: String
+    ) {
+        appendMessageToFile(unfilteredSpamFile, message)
+        logEventToInflux(chatId, "SPAM_REPORT")
+    }
+
+    fun receivedMessage(chatId: Long) {
+        logEventToInflux(chatId, "MESSAGE")
+    }
+
+    private fun appendMessageToFile(
+        file: File,
+        message: String
+    ) {
         file.appendText(
             message
                 .replace("\n", " ")
@@ -32,5 +67,22 @@ class Logger(
                 )
         )
         file.appendText("\n")
+    }
+
+    private fun logEventToInflux(
+        chatId: Long,
+        messageType: String
+    ) {
+        influxClient?.getWriteKotlinApi()?.let { api ->
+            val point = Point
+                .measurement("message")
+                .addTag("chatId", chatId.toString())
+                .addField("messageType", messageType)
+                .time(Instant.now(), WritePrecision.NS)
+
+            GlobalScope.launch {
+                api.writePoint(point)
+            }
+        }
     }
 }

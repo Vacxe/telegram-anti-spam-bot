@@ -3,9 +3,9 @@ package io.github.vacxe.tgantispam.core.configuration
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Configuration(
+data class InfluxDbConfiguration(
+    val url: String,
     val token: String,
-    val pollingTimeout: Int,
-    val debug: Boolean,
-    val influxDb: InfluxDbConfiguration? = null
+    val org: String,
+    val bucket: String,
 )

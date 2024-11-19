@@ -43,8 +43,11 @@ fun main() {
     Settings.chats = json.decodeFromString(Files.chats.readText())
     println("Chats configs loaded for ${Settings.chats.size} chats...")
 
+    val logger = Logger(
+        Settings.configuration.influxDb
+    )
+
     val spamFilter = RussianSpamFilter()
-    val logger = Logger()
 
     val bot = bot {
         token = Settings.configuration.token
@@ -61,9 +64,9 @@ fun main() {
                     val text = text
 
                     if (spamFilter.isSpam(text)) {
-                        logger.receivedSpamMessage(
-                            message = text,
-                            detected = true
+                        logger.detectedSpamMessage(
+                            chatId = message.chat.id,
+                            message = text
                         )
                         if (chatConfiguration.adminChatId != null) {
                             bot.forwardMessage(
@@ -81,6 +84,8 @@ fun main() {
                             )
                         }
                         bot.deleteMessage(ChatId.fromId(chatId), messageId)
+                    } else {
+                        logger.receivedMessage(message.chat.id)
                     }
                 }
             }
@@ -89,9 +94,9 @@ fun main() {
                 if (messageFromAdmin()) {
                     val replyToMessage = message.replyToMessage
                     if (replyToMessage != null) {
-                        logger.receivedSpamMessage(
-                            message = replyToMessage.text.orEmpty(),
-                            detected = false
+                        logger.reportedSpamMessage(
+                            chatId = message.chat.id,
+                            message = replyToMessage.text.orEmpty()
                         )
                         bot.deleteMessage(ChatId.fromId(message.chat.id), replyToMessage.messageId)
                         replyToMessage.from?.id?.let { userId ->
