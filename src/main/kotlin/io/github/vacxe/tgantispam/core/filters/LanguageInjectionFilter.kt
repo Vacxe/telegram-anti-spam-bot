@@ -2,7 +2,7 @@ package io.github.vacxe.tgantispam.core.filters
 
 class LanguageInjectionFilter(private val strictLanguage: Regex) : SpamFilter {
     override fun isSpam(input: String): Boolean = input
-        .replace(Regex("[!-/]|[:-@]|[\\[-`]|[{-~]\\."), "") // Remove special symbols
+        .replace(Regex("[!-/]|[:-@]|[\\[-`]|[{-~]\\."), " ") // Remove special symbols
         .replace("\n", " ")
         .replace(Regex("\\s{2,}"), " ")
         .split(" ")
