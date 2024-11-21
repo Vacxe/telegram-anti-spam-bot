@@ -14,8 +14,10 @@ import io.github.vacxe.tgantispam.core.configuration.Configuration
 import io.github.vacxe.tgantispam.core.data.Chat
 import io.github.vacxe.tgantispam.core.filters.RussianSpamFilter
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.system.exitProcess
+import kotlin.time.measureTime
 
 object Settings {
     var chats = HashSet<Chat>()
@@ -56,39 +58,51 @@ fun main() {
 
         dispatch {
             text {
-                val chatId = message.chat.id
-                val chatConfiguration = Settings.chats.firstOrNull { it.id == chatId }
-                if (chatConfiguration != null && chatConfiguration.enabled) {
-                    val userId = message.from?.id
-                    val messageId = message.messageId
-                    val text = text
-
-                    if (spamFilter.isSpam(text)) {
-                        logger.detectedSpamMessage(
-                            chatId = message.chat.id,
-                            message = text
+                measureTime {
+                    val chatId = message.chat.id
+                    val chatConfiguration = Settings.chats.firstOrNull { it.id == chatId }
+                    if (chatConfiguration != null && chatConfiguration.enabled) {
+                        val verifiedUsers: Set<Long> = Json.decodeFromString(
+                            Files.verifiedUsers(message.chat.id).readText()
                         )
-                        if (chatConfiguration.adminChatId != null) {
-                            bot.forwardMessage(
-                                ChatId.fromId(chatConfiguration.adminChatId),
-                                ChatId.fromId(chatId),
-                                messageId,
-                                protectContent = false,
-                                disableNotification = true
-                            )
 
-                            bot.sendMessage(
-                                ChatId.fromId(chatConfiguration.adminChatId),
-                                text = "$userId",
-                                disableNotification = true
+                        val userId = message.from?.id
+                        val messageId = message.messageId
+                        val text = text
+
+                        if (!verifiedUsers.contains(message.from?.id)
+                            && spamFilter.isSpam(text)
+                        ) {
+                            logger.detectedSpamMessage(
+                                chatId = message.chat.id,
+                                message = text
+                            )
+                            if (chatConfiguration.adminChatId != null) {
+                                bot.forwardMessage(
+                                    ChatId.fromId(chatConfiguration.adminChatId),
+                                    ChatId.fromId(chatId),
+                                    messageId,
+                                    protectContent = false,
+                                    disableNotification = true
+                                )
+
+                                bot.sendMessage(
+                                    ChatId.fromId(chatConfiguration.adminChatId),
+                                    text = "$userId",
+                                    disableNotification = true
+                                )
+                            }
+                            bot.deleteMessage(ChatId.fromId(chatId), messageId)
+                        } else {
+                            logger.receivedMessage(
+                                message.chat.id,
+                                text
                             )
                         }
-                        bot.deleteMessage(ChatId.fromId(chatId), messageId)
-                    } else {
-                        logger.receivedMessage(
-                            message.chat.id,
-                            text
-                        )
+                    }
+                }.let {
+                    if(Settings.configuration.debug) {
+                        println("Message time processing: $it")
                     }
                 }
             }
@@ -108,6 +122,32 @@ fun main() {
                     }
                 }
                 bot.deleteMessage(ChatId.fromId(message.chat.id), message.messageId)
+            }
+
+            command("verify_user") {
+                if (messageFromAdmin()) {
+                    Settings.chats
+                        .filter { it.adminChatId == message.chat.id }
+                        .forEach { chat ->
+                            if (chat.adminChatId != null) {
+                                args.getOrNull(0)?.toLong()?.let { userId ->
+                                    val verifiedUsersFile = Files.verifiedUsers(chat.id)
+                                    val verifiedUsers: HashSet<Long> = Json
+                                        .decodeFromString<Set<Long>>(verifiedUsersFile.readText())
+                                        .toHashSet()
+                                    verifiedUsers.add(userId)
+                                    verifiedUsersFile.writeText(
+                                        json.encodeToString(verifiedUsers)
+                                    )
+                                    bot.sendMessage(
+                                        ChatId.fromId(chat.adminChatId),
+                                        text = "UserId: $userId verified in ${chat.id}",
+                                        disableNotification = true
+                                    )
+                                }
+                            }
+                        }
+                }
             }
 
             command("get_chat_id") {
@@ -142,7 +182,7 @@ fun main() {
 
             command("set_login_captcha") {
                 if (messageFromAdmin()) {
-                    // TODO
+
                 }
             }
 

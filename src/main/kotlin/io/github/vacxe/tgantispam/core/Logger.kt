@@ -10,8 +10,6 @@ import java.io.File
 import java.time.Instant
 
 class Logger(influxDbConfiguration: InfluxDbConfiguration? = null) {
-    private val filteredSpamFile: File = File("data/logger/filtered_spam_messages.txt")
-    private val unfilteredSpamFile: File = File("data/logger/unfiltered_spam_messages.txt")
 
     private val influxClient = influxDbConfiguration?.let {
         InfluxDBClientKotlinFactory.create(
@@ -22,23 +20,11 @@ class Logger(influxDbConfiguration: InfluxDbConfiguration? = null) {
         )
     }
 
-    init {
-        if (!filteredSpamFile.exists()) {
-            filteredSpamFile.getParentFile().mkdirs()
-            filteredSpamFile.createNewFile()
-        }
-
-        if (!unfilteredSpamFile.exists()) {
-            unfilteredSpamFile.getParentFile().mkdirs()
-            unfilteredSpamFile.createNewFile()
-        }
-    }
-
     fun detectedSpamMessage(
         chatId: Long,
         message: String,
     ) {
-        appendMessageToFile(filteredSpamFile, message)
+        appendMessageToFile(Files.filteredSpamFile, message)
         logEventToInflux(chatId, message, "SPAM")
     }
 
@@ -46,7 +32,7 @@ class Logger(influxDbConfiguration: InfluxDbConfiguration? = null) {
         chatId: Long,
         message: String
     ) {
-        appendMessageToFile(unfilteredSpamFile, message)
+        appendMessageToFile(Files.unfilteredSpamFile, message)
         logEventToInflux(
             chatId, message,
             "SPAM_REPORT"
