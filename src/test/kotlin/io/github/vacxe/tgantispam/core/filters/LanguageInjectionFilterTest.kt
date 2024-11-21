@@ -6,7 +6,7 @@ import kotlin.test.assertFalse
 
 
 class LanguageInjectionFilterTest {
-    private val filter = LanguageInjectionFilter(Regex("[А-Яа-яЁё\\d]"))
+    private val filter = LanguageInjectionFilter(Regex("[А-Яа-яЁё]"))
 
     @Test
     fun testAllRussian(){
@@ -36,6 +36,11 @@ class LanguageInjectionFilterTest {
     @Test
     fun testRussianWithDash(){
         assertFalse(filter.isSpam("Ui-тесты"))
+    }
+
+    @Test
+    fun testNumbersInNonRussian(){
+        assertFalse(filter.isSpam("По-моему Руслан говорил про это в этом интервью https://youtu.be/GppTWKwEYwE?si=rTvYGlzPStg9jZG_"))
     }
 
     @Test
