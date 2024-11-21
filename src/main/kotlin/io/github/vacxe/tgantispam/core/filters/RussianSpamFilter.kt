@@ -6,7 +6,10 @@ import io.github.vacxe.tgantispam.core.linguistic.RemoveUnicodeTransformer
 import io.github.vacxe.tgantispam.core.linguistic.RussianCharacterTransformer
 
 class RussianSpamFilter : CombineFilter(
-    LanguageInjectionFilter(Regex("[А-Яа-яЁё]")),
+    LanguageInjectionFilter(
+        Regex("[А-Яа-яЁё]"),
+        inputTransformer = RemoveUnicodeTransformer()
+    ),
     WeightFilter(
         restrictions = setOf(
             Regex("\\d+\\s*\\\$"),
@@ -16,7 +19,10 @@ class RussianSpamFilter : CombineFilter(
             Regex("eur"), /* E - latin */
             Regex("еur") /* E - cyrillic */
         ),
-        inputTransformer = LowercaseTransformer()
+        inputTransformer = CombineTransformer(
+            RemoveUnicodeTransformer(),
+            LowercaseTransformer()
+        )
     ),
     WeightFilter(
         restrictions = setOf(
@@ -41,7 +47,7 @@ class RussianSpamFilter : CombineFilter(
     WeightFilter(
         maxWeight = 3,
         restrictions = setOf(
-            "\\\$",
+            "\$",
             "день",
             "долларов",
             "приглашаю",
@@ -96,7 +102,8 @@ class RussianSpamFilter : CombineFilter(
             "долларов",
             "анкетирования",
             "\\d+",
-            "смс"
+            "смс",
+            "темка"
         ).map { Regex(it) }.toSet(),
         inputTransformer = CombineTransformer(
             RemoveUnicodeTransformer(),
