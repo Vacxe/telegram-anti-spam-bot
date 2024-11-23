@@ -25,6 +25,7 @@ dependencies {
     implementation("com.charleskorn.kaml:kaml:0.59.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     implementation("com.influxdb:influxdb-client-kotlin:3.1.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
