@@ -5,7 +5,7 @@ import io.github.vacxe.tgantispam.core.linguistic.LowercaseTransformer
 import io.github.vacxe.tgantispam.core.linguistic.RemoveUnicodeTransformer
 import io.github.vacxe.tgantispam.core.linguistic.RussianCharacterTransformer
 
-class RussianSpamFilter : CombineFilter(
+class RussianSpamFilter(vararg additionalFilters: SpamFilter) : CombineFilter(
     LanguageInjectionFilter(
         Regex("[А-Яа-яЁё]"),
         inputTransformer = RemoveUnicodeTransformer()
@@ -110,5 +110,6 @@ class RussianSpamFilter : CombineFilter(
             LowercaseTransformer(),
             RussianCharacterTransformer()
         )
-    )
+    ),
+    *additionalFilters
 )

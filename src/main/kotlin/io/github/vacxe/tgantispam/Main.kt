@@ -12,7 +12,9 @@ import io.github.vacxe.tgantispam.core.Files
 import io.github.vacxe.tgantispam.core.Logger
 import io.github.vacxe.tgantispam.core.configuration.Configuration
 import io.github.vacxe.tgantispam.core.data.Chat
+import io.github.vacxe.tgantispam.core.filters.RemoteFilter
 import io.github.vacxe.tgantispam.core.filters.RussianSpamFilter
+import io.github.vacxe.tgantispam.core.filters.SpamFilter
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -49,7 +51,11 @@ fun main() {
         Settings.configuration.influxDb
     )
 
-    val spamFilter = RussianSpamFilter()
+    val additionalFilters: List<SpamFilter> = Settings.configuration.remoteFilterEndpoint?.let {
+        listOf(RemoteFilter(it))
+    } ?: emptyList()
+
+    val spamFilter = RussianSpamFilter(*additionalFilters.toTypedArray())
 
     val bot = bot {
         token = Settings.configuration.token
