@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import kotlinx.serialization.json.Json
+import okio.ByteString.Companion.encode
 
 @Serializable
 data class CheckResponse(val ham: Float, val spam: Float)
@@ -15,7 +16,8 @@ class RemoteFilter(private val endpoint: String) : SpamFilter {
     override fun isSpam(input: String): Boolean {
         try {
             val request = Request.Builder()
-                .url(endpoint)
+                .url("$endpoint?text=${input.encode()}")  // Add URL parameter
+                .get()
                 .build();
 
             client.newCall(request).execute().use { response ->
