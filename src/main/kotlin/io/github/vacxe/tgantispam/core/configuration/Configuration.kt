@@ -7,5 +7,6 @@ data class Configuration(
     val token: String,
     val pollingTimeout: Int,
     val debug: Boolean,
-    val influxDb: InfluxDbConfiguration? = null
+    val influxDb: InfluxDbConfiguration? = null,
+    val remoteFilterEndpoint: String? = null
 )
