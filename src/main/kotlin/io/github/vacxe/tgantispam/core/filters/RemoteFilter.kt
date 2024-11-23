@@ -13,17 +13,21 @@ class RemoteFilter(private val endpoint: String) : SpamFilter {
     private val json = Json { ignoreUnknownKeys = true }
 
     override fun isSpam(input: String): Boolean {
-        val request = Request.Builder()
-            .url(endpoint)
-            .build();
+        try {
+            val request = Request.Builder()
+                .url(endpoint)
+                .build();
 
-        client.newCall(request).execute().use { response ->
-            response.body?.string()?.let { jsonString ->
-                val checkResponse = json.decodeFromString<CheckResponse>(jsonString)
-                return checkResponse.spam > checkResponse.ham
+            client.newCall(request).execute().use { response ->
+                response.body?.string()?.let { jsonString ->
+                    val checkResponse = json.decodeFromString<CheckResponse>(jsonString)
+                    return checkResponse.spam > checkResponse.ham
+                }
             }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            System.err.println("Request to $endpoint failed, fallback to default value = false")
         }
-        // Fallback to false in case of problems with API
         return false
     }
 }
