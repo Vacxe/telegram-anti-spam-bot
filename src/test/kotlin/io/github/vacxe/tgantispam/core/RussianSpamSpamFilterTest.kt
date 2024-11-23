@@ -3,8 +3,6 @@ package io.github.vacxe.tgantispam.core
 import io.github.vacxe.tgantispam.core.filters.RussianSpamFilter
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
-import kotlin.test.Test
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class RussianSpamSpamFilterTest {
