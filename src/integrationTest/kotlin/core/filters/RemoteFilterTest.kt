@@ -1,6 +1,7 @@
 package io.github.vacxe.tgantispam.core
 
 import io.github.vacxe.tgantispam.core.filters.RemoteFilter
+import io.github.vacxe.tgantispam.core.filters.SpamFilter
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -8,8 +9,6 @@ import org.testcontainers.containers.GenericContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
-import kotlin.time.Duration.Companion.seconds
-import kotlin.time.toJavaDuration
 
 @Testcontainers
 class RemoteFilterTest {
@@ -27,12 +26,12 @@ class RemoteFilterTest {
     @Test
     fun testSpam() {
         val filter = createFilter()
-        assertTrue(filter.isSpam("Привет, нужны люди ,( С телефона, или  компьютера)   От 220\$ в день. Удалённая занятость , Подробности в ЛС"))
+        assertTrue(filter.validate("Привет, нужны люди ,( С телефона, или  компьютера)   От 220\$ в день. Удалённая занятость , Подробности в ЛС") is SpamFilter.Decision.Quarantine)
     }
 
     @Test
     fun testHam() {
         val filter = createFilter()
-        assertFalse(filter.isSpam("Я хочу, чтобы при создании Pull Request запускались только релевантные UI-тесты, чтобы избежать избыточного выполнения всех тестов. То есть тесты которые были затронуты кодом в Git Diff.\n"))
+        assertTrue(filter.validate("Я хочу, чтобы при создании Pull Request запускались только релевантные UI-тесты, чтобы избежать избыточного выполнения всех тестов. То есть тесты которые были затронуты кодом в Git Diff.\n") is SpamFilter.Decision.Pass)
     }
 }
