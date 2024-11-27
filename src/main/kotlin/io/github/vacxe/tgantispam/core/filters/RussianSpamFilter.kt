@@ -45,7 +45,8 @@ class RussianSpamFilter(vararg additionalFilters: SpamFilter) : CombineFilter(
         )
     ),
     WeightFilter(
-        maxWeight = 3,
+        quarantineWeight = 3,
+        //banWeight = 5,
         restrictions = setOf(
             "\$",
             "день",

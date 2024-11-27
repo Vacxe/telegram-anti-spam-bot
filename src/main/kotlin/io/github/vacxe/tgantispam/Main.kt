@@ -5,6 +5,7 @@ import com.github.kotlintelegrambot.bot
 import com.github.kotlintelegrambot.dispatch
 import com.github.kotlintelegrambot.dispatcher.*
 import com.github.kotlintelegrambot.dispatcher.handlers.CommandHandlerEnvironment
+import com.github.kotlintelegrambot.dispatcher.handlers.TextHandlerEnvironment
 import com.github.kotlintelegrambot.entities.ChatId
 import com.github.kotlintelegrambot.entities.Message
 import com.github.kotlintelegrambot.logging.LogLevel
@@ -15,6 +16,10 @@ import io.github.vacxe.tgantispam.core.data.Chat
 import io.github.vacxe.tgantispam.core.filters.RemoteFilter
 import io.github.vacxe.tgantispam.core.filters.RussianSpamFilter
 import io.github.vacxe.tgantispam.core.filters.SpamFilter
+import io.github.vacxe.tgantispam.core.filters.SpamFilter.Decision.Ban
+import io.github.vacxe.tgantispam.core.filters.SpamFilter.Decision.Quarantine
+import io.github.vacxe.tgantispam.core.messageFromAdmin
+import io.github.vacxe.tgantispam.core.updateChatConfig
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -76,38 +81,86 @@ fun main() {
                         val messageId = message.messageId
                         val text = text
 
-                        if (!verifiedUsers.contains(message.from?.id)
-                            && spamFilter.isSpam(text)
-                        ) {
-                            logger.detectedSpamMessage(
-                                chatId = message.chat.id,
-                                message = text
-                            )
-                            if (chatConfiguration.adminChatId != null) {
-                                bot.forwardMessage(
-                                    ChatId.fromId(chatConfiguration.adminChatId),
-                                    ChatId.fromId(chatId),
-                                    messageId,
-                                    protectContent = false,
-                                    disableNotification = true
-                                )
+                        if (!verifiedUsers.contains(message.from?.id) && !messageFromAdmin()) {
+                            val results = spamFilter.validate(text)
+                            when (val result = results.maxBy { it.weight }) {
+                                is Quarantine -> {
+                                    logger.detectedSpamMessage(
+                                        chatId = message.chat.id,
+                                        message = text
+                                    )
+                                    if (chatConfiguration.adminChatId != null) {
+                                        bot.forwardMessage(
+                                            ChatId.fromId(chatConfiguration.adminChatId),
+                                            ChatId.fromId(chatId),
+                                            messageId,
+                                            protectContent = false,
+                                            disableNotification = true
+                                        )
 
-                                bot.sendMessage(
-                                    ChatId.fromId(chatConfiguration.adminChatId),
-                                    text = "$userId",
-                                    disableNotification = true
-                                )
+                                        bot.sendMessage(
+                                            ChatId.fromId(chatConfiguration.adminChatId),
+                                            text = "$userId",
+                                            disableNotification = true
+                                        )
+
+                                        if (Settings.configuration.debug) {
+                                            bot.sendMessage(
+                                                ChatId.fromId(chatConfiguration.adminChatId),
+                                                text = results.joinToString("\n") { it.message },
+                                                disableNotification = true
+                                            )
+                                        }
+                                    }
+                                    bot.deleteMessage(ChatId.fromId(chatId), messageId)
+                                }
+
+                                is Ban -> {
+                                    logger.detectedSpamMessage(
+                                        chatId = message.chat.id,
+                                        message = text
+                                    )
+                                    userId?.let {
+                                        bot.banChatMember(ChatId.fromId(chatId), userId)
+                                        if (chatConfiguration.adminChatId != null) {
+                                            bot.forwardMessage(
+                                                ChatId.fromId(chatConfiguration.adminChatId),
+                                                ChatId.fromId(chatId),
+                                                messageId,
+                                                protectContent = false,
+                                                disableNotification = true
+                                            )
+                                            bot.sendMessage(
+                                                ChatId.fromId(chatConfiguration.adminChatId),
+                                                text = "UserId: $userId **Auto Banned** in $chatId",
+                                                disableNotification = true
+                                            )
+
+                                            if (Settings.configuration.debug) {
+                                                bot.sendMessage(
+                                                    ChatId.fromId(chatConfiguration.adminChatId),
+                                                    text = results.joinToString("\n") { it.message },
+                                                    disableNotification = true
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                    bot.deleteMessage(ChatId.fromId(chatId), messageId)
+                                }
+
+                                SpamFilter.Decision.Pass -> {}
                             }
-                            bot.deleteMessage(ChatId.fromId(chatId), messageId)
-                        } else {
-                            logger.receivedMessage(
-                                message.chat.id,
-                                text
-                            )
                         }
+
+                    } else {
+                        logger.receivedMessage(
+                            message.chat.id,
+                            text
+                        )
                     }
                 }.let {
-                    if(Settings.configuration.debug) {
+                    if (Settings.configuration.debug) {
                         println("Message time processing: $it")
                     }
                 }
@@ -226,23 +279,4 @@ fun main() {
 
     bot.startPolling()
     println("Bot polling...")
-}
-
-fun CommandHandlerEnvironment.messageFromAdmin(): Boolean = bot
-    .getChatAdministrators(ChatId.fromId(message.chat.id))
-    .getOrNull()
-    ?.any { it.user.id == message.from?.id } ?: false
-
-fun CommandHandlerEnvironment.updateChatConfig(update: (Chat, Message) -> Chat) {
-    val chatConfig =
-        Settings.chats.firstOrNull { it.id == message.chat.id } ?: Chat(id = message.chat.id)
-    Settings.chats.remove(chatConfig)
-    Settings.chats.add(update.invoke(chatConfig, message))
-
-    Files.chats.writeText(
-        json.encodeToString(
-            ListSerializer(Chat.serializer()),
-            Settings.chats.toList()
-        )
-    )
 }
