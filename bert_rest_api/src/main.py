@@ -4,7 +4,7 @@ from transformers import pipeline
 import os
 import json
 
-model_id = "ivanbalaksha/bert-base-uncased-finetuned-spam-detection"
+model_id = "spamfighters/bert-base-uncased-finetuned-spam-detection"
 token = os.environ['HG_TOKEN']
 
 class ClassifierModel:
