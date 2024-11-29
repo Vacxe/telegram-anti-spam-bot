@@ -5,7 +5,7 @@ import io.github.vacxe.tgantispam.core.linguistic.Transformer
 
 open class WeightFilter(
     private val restrictions: Set<Regex>,
-    private val quarantineWeight: Int = 0,
+    private val quarantineWeight: Int = 1,
     private val banWeight: Int = Int.MAX_VALUE,
     private val inputTransformer: Transformer = PassTransformer()
 ) : SpamFilter {
@@ -23,7 +23,7 @@ open class WeightFilter(
         }
 
         val message = "WeightFilter: weights sum $weight not zero -> $matches"
-        if (weight != 0) {
+        if (weight > 0) {
             println(message)
         }
 

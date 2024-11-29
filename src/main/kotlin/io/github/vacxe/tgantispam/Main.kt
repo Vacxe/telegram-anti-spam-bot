@@ -83,7 +83,7 @@ fun main() {
 
                         if (!verifiedUsers.contains(message.from?.id) && !messageFromAdmin()) {
                             val results = spamFilter.validate(text)
-                            when (val result = results.maxBy { it.weight }) {
+                            when (results.maxBy { it.weight }) {
                                 is Quarantine -> {
                                     logger.detectedSpamMessage(
                                         chatId = message.chat.id,
@@ -266,6 +266,36 @@ fun main() {
                                         bot.sendMessage(
                                             ChatId.fromId(chat.adminChatId),
                                             text = "UserId: $userId banned in ${chat.id}",
+                                            disableNotification = true
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                }
+            }
+
+            command("unban") {
+                if (messageFromAdmin()) {
+                    Settings.chats
+                        .filter { it.adminChatId == message.chat.id }
+                        .forEach { chat ->
+                            if (chat.adminChatId != null) {
+                                val userId = args.getOrNull(0)?.toLong()
+                                val chatId = args.getOrNull(1)?.toLong()
+                                if (userId != null) {
+                                    if (chatId != null) {
+                                        bot.unbanChatMember(chatId = ChatId.fromId(chatId), userId = userId)
+                                        bot.sendMessage(
+                                            ChatId.fromId(chat.adminChatId),
+                                            text = "UserId: $userId unbanned in $chatId",
+                                            disableNotification = true
+                                        )
+                                    } else {
+                                        bot.unbanChatMember(chatId = ChatId.fromId(chat.id), userId = userId)
+                                        bot.sendMessage(
+                                            ChatId.fromId(chat.adminChatId),
+                                            text = "UserId: $userId unbanned in ${chat.id}",
                                             disableNotification = true
                                         )
                                     }

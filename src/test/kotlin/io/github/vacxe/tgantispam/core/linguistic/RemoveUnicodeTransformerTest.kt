@@ -5,11 +5,27 @@ import kotlin.test.assertEquals
 
 class RemoveUnicodeTransformerTest {
 
-    //@Test
-    fun test() {
-        val input = "\uD83D\uDCBC Возможность дополнительного заработка \n\uD83D\uDCF2 Достаточно смартфона или ноутбука ⏳ Всего 1-2 часа в день\n\n\uD83D\uDC64 Подробности в личку! Есть предложение по oнлайн проeкту. С дневной выручкой от 400 USD. Желающих жду в частной перeписке."
+    @Test
+    fun testUnicodeRemoved() {
+        val input = "\uD83D\uDCBCВозможность дополнительного заработка\uD83D\uDCF2⏳"
 
         val output = RemoveUnicodeTransformer().transform(input)
-        assertEquals("S", output)
+        assertEquals("Возможность дополнительного заработка", output)
+    }
+
+    @Test
+    fun testDollarNotRemoved() {
+        val input = "Symbol $ not removed"
+
+        val output = RemoveUnicodeTransformer().transform(input)
+        assertEquals("Symbol $ not removed", output)
+    }
+
+    @Test
+    fun testPlusNotRemoved() {
+        val input = "Symbol + not removed"
+
+        val output = RemoveUnicodeTransformer().transform(input)
+        assertEquals("Symbol + not removed", output)
     }
 }

@@ -48,7 +48,7 @@ class RussianSpamFilter(vararg additionalFilters: SpamFilter) : CombineFilter(
         quarantineWeight = 3,
         //banWeight = 5,
         restrictions = setOf(
-            "\$",
+            "[$]",
             "день",
             "долларов",
             "приглашаю",
@@ -97,7 +97,7 @@ class RussianSpamFilter(vararg additionalFilters: SpamFilter) : CombineFilter(
             "срочно",
             "прибыль",
             "набираю",
-            "\\+",
+            "[+]",
             "удаленная",
             "удаленка",
             "долларов",
