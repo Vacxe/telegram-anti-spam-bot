@@ -8,6 +8,8 @@ import io.github.vacxe.tgantispam.core.linguistic.RussianCharacterTransformer
 class RussianSpamFilter(vararg additionalFilters: SpamFilter) : CombineFilter(
     LanguageInjectionFilter(
         Regex("[А-Яа-яЁё]"),
+        quarantineWeight = 2,
+        //banWeight = 3,
         inputTransformer = RemoveUnicodeTransformer()
     ),
     WeightFilter(
