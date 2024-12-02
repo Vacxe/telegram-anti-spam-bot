@@ -16,17 +16,16 @@ class LanguageInjectionFilter(
             .replace("\n", " ")
             .replace(Regex("\\s{2,}"), " ")
             .split(" ")
-            .map { word ->
+            .mapNotNull { word ->
                 val numbers = Regex("\\d").findAll(word).toList().size
                 val strictLanguageChars = strictLanguage.findAll(word).toList().size
                 val isSpam = strictLanguageChars != 0 && strictLanguageChars + numbers != word.length
-                return@map if (isSpam) {
+                if (isSpam) {
                     val injectedSymbols = strictLanguage.replace(word, "")
-                    val message = "\"$word\":\"$injectedSymbols\""
-                    message
-                } else null
+                    "\"$word\":\"$injectedSymbols\""
+                } else
+                    null
             }
-            .filterNotNull()
         val size = scanResult.size
         val message = "Detected multi language in: ${scanResult.joinToString(", ")}"
 

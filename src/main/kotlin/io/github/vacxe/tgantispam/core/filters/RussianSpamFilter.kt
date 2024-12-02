@@ -3,13 +3,12 @@ package io.github.vacxe.tgantispam.core.filters
 import io.github.vacxe.tgantispam.core.linguistic.CombineTransformer
 import io.github.vacxe.tgantispam.core.linguistic.LowercaseTransformer
 import io.github.vacxe.tgantispam.core.linguistic.RemoveUnicodeTransformer
-import io.github.vacxe.tgantispam.core.linguistic.RussianCharacterTransformer
 
 class RussianSpamFilter(vararg additionalFilters: SpamFilter) : CombineFilter(
     LanguageInjectionFilter(
         Regex("[А-Яа-яЁё]"),
         quarantineWeight = 2,
-        //banWeight = 3,
+        banWeight = 3,
         inputTransformer = RemoveUnicodeTransformer()
     ),
     WeightFilter(
@@ -18,8 +17,7 @@ class RussianSpamFilter(vararg additionalFilters: SpamFilter) : CombineFilter(
             Regex("\\\$\\s*\\d+"),
             Regex("18\\s*\\+"),
             Regex("usd"),
-            Regex("eur"), /* E - latin */
-            Regex("еur") /* E - cyrillic */
+            Regex("eur"),
         ),
         inputTransformer = CombineTransformer(
             RemoveUnicodeTransformer(),
@@ -43,12 +41,11 @@ class RussianSpamFilter(vararg additionalFilters: SpamFilter) : CombineFilter(
         inputTransformer = CombineTransformer(
             RemoveUnicodeTransformer(),
             LowercaseTransformer(),
-            RussianCharacterTransformer()
         )
     ),
     WeightFilter(
         quarantineWeight = 3,
-        //banWeight = 5,
+        banWeight = 5,
         restrictions = setOf(
             "[$]",
             "день",
@@ -111,7 +108,6 @@ class RussianSpamFilter(vararg additionalFilters: SpamFilter) : CombineFilter(
         inputTransformer = CombineTransformer(
             RemoveUnicodeTransformer(),
             LowercaseTransformer(),
-            RussianCharacterTransformer()
         )
     ),
     *additionalFilters

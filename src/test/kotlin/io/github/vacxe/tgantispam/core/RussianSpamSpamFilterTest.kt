@@ -14,6 +14,9 @@ class RussianSpamSpamFilterTest {
     @CsvFileSource(resources = ["/spam_messages.csv"])
     fun detectSpamTest(message: String) {
         val result = filter.validate(message).maxBy { it.weight }
-        assertTrue(result is SpamFilter.Decision.Quarantine)
+        assertTrue(
+            result is SpamFilter.Decision.Quarantine ||
+            result is SpamFilter.Decision.Ban
+        )
     }
 }
