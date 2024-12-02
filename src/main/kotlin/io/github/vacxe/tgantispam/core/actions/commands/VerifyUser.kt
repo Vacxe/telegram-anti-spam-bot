@@ -10,11 +10,10 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 object VerifyUser {
-    fun apply(
-        dispatcher: Dispatcher,
+    fun Dispatcher.verifyUser(
         json: Json,
     ) {
-        dispatcher.apply {
+        apply {
             command("verify_user") {
                 if (messageFromAdmin()) {
                     val userId = args.getOrNull(0)?.toLong()

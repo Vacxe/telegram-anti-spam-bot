@@ -7,7 +7,13 @@ import com.github.kotlintelegrambot.logging.LogLevel
 import io.github.vacxe.tgantispam.core.Files
 import io.github.vacxe.tgantispam.core.Logger
 import io.github.vacxe.tgantispam.core.actions.commands.*
+import io.github.vacxe.tgantispam.core.actions.commands.BanUser.banUser
+import io.github.vacxe.tgantispam.core.actions.commands.ReportSpam.reportSpam
+import io.github.vacxe.tgantispam.core.actions.commands.Systems.systems
+import io.github.vacxe.tgantispam.core.actions.commands.UnbanUser.unbanUser
+import io.github.vacxe.tgantispam.core.actions.commands.VerifyUser.verifyUser
 import io.github.vacxe.tgantispam.core.actions.events.ReceiveTextMessage
+import io.github.vacxe.tgantispam.core.actions.events.ReceiveTextMessage.receiveTextMessage
 import io.github.vacxe.tgantispam.core.configuration.Configuration
 import io.github.vacxe.tgantispam.core.data.Chat
 import io.github.vacxe.tgantispam.core.filters.RemoteFilter
@@ -58,24 +64,14 @@ fun main() {
         logLevel = LogLevel.Error
 
         dispatch {
-            Systems::apply
-            ReceiveTextMessage.apply(
-                this,
-                spamFilter,
-                logger
-            )
-
-            ReportSpam.apply(
-                this,
-                logger
-            )
-
-            VerifyUser.apply(
-                this,
-                json,
-            )
-            BanUser::apply
-            UnbanUser::apply
+            apply {
+                systems()
+                receiveTextMessage(spamFilter, logger)
+                reportSpam(logger)
+                verifyUser(json)
+                banUser()
+                unbanUser()
+            }
         }
     }
 

@@ -7,8 +7,8 @@ import io.github.vacxe.tgantispam.core.messageFromAdmin
 import io.github.vacxe.tgantispam.core.updateChatConfig
 
 object Systems {
-    fun apply(dispatcher: Dispatcher) {
-        dispatcher.apply {
+    fun Dispatcher.systems() {
+        apply {
             command("get_chat_id") {
                 if (messageFromAdmin()) {
                     bot.sendMessage(ChatId.fromId(message.chat.id), message.chat.id.toString())

@@ -17,13 +17,12 @@ import kotlinx.serialization.json.Json
 import kotlin.time.measureTime
 
 object ReceiveTextMessage {
-    val goodBehaviourManager = GoodBehaviourManager()
-    fun apply(
-        dispatcher: Dispatcher,
+    private val goodBehaviourManager = GoodBehaviourManager()
+    fun Dispatcher.receiveTextMessage(
         spamFilter: CombineFilter,
         logger: Logger
     ) {
-        dispatcher.apply {
+        apply {
             text {
                 measureTime {
                     val chatId = message.chat.id

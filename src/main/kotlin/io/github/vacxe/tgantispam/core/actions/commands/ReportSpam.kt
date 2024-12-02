@@ -7,11 +7,10 @@ import io.github.vacxe.tgantispam.core.Logger
 import io.github.vacxe.tgantispam.core.messageFromAdmin
 
 object ReportSpam {
-    fun apply(
-        dispatcher: Dispatcher,
+    fun Dispatcher.reportSpam(
         logger: Logger,
     ) {
-        dispatcher.apply {
+        apply {
             command("report_spam") {
                 if (messageFromAdmin()) {
                     val replyToMessage = message.replyToMessage
