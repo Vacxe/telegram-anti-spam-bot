@@ -6,26 +6,20 @@ import io.github.vacxe.tgantispam.core.linguistic.RemoveUnicodeTransformer
 
 class RussianSpamFilter(vararg additionalFilters: SpamFilter) : CombineFilter(
     LanguageInjectionFilter(
-        Regex("[А-Яа-яЁё]"),
+        strictLanguage= Regex("[А-Яа-яЁё]"),
+        name = "Injection in russian words",
         quarantineWeight = 2,
         banWeight = 3,
         inputTransformer = RemoveUnicodeTransformer()
     ),
     WeightFilter(
+        name = "Strong restricted words",
         restrictions = setOf(
-            Regex("\\d+\\s*\\\$"),
-            Regex("\\\$\\s*\\d+"),
-            Regex("18\\s*\\+"),
-            Regex("usd"),
-            Regex("eur"),
-        ),
-        inputTransformer = CombineTransformer(
-            RemoveUnicodeTransformer(),
-            LowercaseTransformer()
-        )
-    ),
-    WeightFilter(
-        restrictions = setOf(
+            "\\d+\\s*[$]",
+            "[$]\\s*\\d+",
+            "18\\s*\\+",
+            "usd",
+            "eur",
             "доход",
             "дохода",
             "доходность",
@@ -44,6 +38,7 @@ class RussianSpamFilter(vararg additionalFilters: SpamFilter) : CombineFilter(
         )
     ),
     WeightFilter(
+        name = "Common words",
         quarantineWeight = 3,
         banWeight = 5,
         restrictions = setOf(

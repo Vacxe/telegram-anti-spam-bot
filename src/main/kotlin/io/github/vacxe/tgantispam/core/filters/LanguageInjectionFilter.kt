@@ -5,13 +5,18 @@ import io.github.vacxe.tgantispam.core.linguistic.Transformer
 
 class LanguageInjectionFilter(
     private val strictLanguage: Regex,
-    private val quarantineWeight: Int = 1,
-    private val banWeight: Int = Int.MAX_VALUE,
-    private val inputTransformer: Transformer = PassTransformer()
-) : SpamFilter {
-    override fun validate(input: String): SpamFilter.Decision {
-        val transformedInput = inputTransformer.transform(input)
-        val scanResult = transformedInput
+    name: String? = null,
+    quarantineWeight: Int = 1,
+    banWeight: Int = Int.MAX_VALUE,
+    inputTransformer: Transformer = PassTransformer()
+) : BaseSpamFilter(
+    name,
+    quarantineWeight,
+    banWeight,
+    inputTransformer
+) {
+    override fun validateInput(input: String): SpamFilter.Decision {
+        val scanResult = input
             .replace(Regex("[!-/]|[:-@]|[\\[-`]|[{-~]\\."), " ") // Remove special symbols
             .replace("\n", " ")
             .replace(Regex("\\s{2,}"), " ")
@@ -26,15 +31,9 @@ class LanguageInjectionFilter(
                 } else
                     null
             }
-        val size = scanResult.size
-        val message = "Detected multi language in: ${scanResult.joinToString(", ")}"
+        val weight = scanResult.size
+        val message = "Found injection in: ${scanResult.joinToString(", ")}"
 
-        return if (size >= banWeight) {
-            println(message)
-            SpamFilter.Decision.Ban(message)
-        } else if (size >= quarantineWeight) {
-            println(message)
-            SpamFilter.Decision.Quarantine(message)
-        } else SpamFilter.Decision.Pass
+        return report(weight, message)
     }
 }

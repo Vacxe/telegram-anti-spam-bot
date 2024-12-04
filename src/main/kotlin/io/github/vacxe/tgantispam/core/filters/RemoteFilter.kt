@@ -25,13 +25,13 @@ class RemoteFilter(private val endpoint: String) : SpamFilter {
                     val checkResponse = json.decodeFromString<CheckResponse>(jsonString)
                     return if (checkResponse.spam > checkResponse.ham)
                         SpamFilter.Decision.Quarantine("RemoteFilter: Spam ${checkResponse.spam} > Ham ${checkResponse.ham}")
-                    else SpamFilter.Decision.Pass
+                    else SpamFilter.Decision.Pass()
                 }
             }
         } catch (ex: Exception) {
             ex.printStackTrace()
             System.err.println("Request to $endpoint failed, fallback to default value = IGNORE_MESSAGE")
         }
-        return SpamFilter.Decision.Pass
+        return SpamFilter.Decision.Pass()
     }
 }

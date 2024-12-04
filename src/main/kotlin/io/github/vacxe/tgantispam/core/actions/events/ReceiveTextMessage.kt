@@ -51,7 +51,7 @@ object ReceiveTextMessage {
                                     results
                                 )
 
-                                SpamFilter.Decision.Pass -> {
+                                is SpamFilter.Decision.Pass -> {
                                     goodBehaviourManager.receiveMessage(message)
                                     logger.receivedMessage(
                                         message.chat.id,
