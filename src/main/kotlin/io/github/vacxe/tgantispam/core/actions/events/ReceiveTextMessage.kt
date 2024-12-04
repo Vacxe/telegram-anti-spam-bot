@@ -19,7 +19,7 @@ import kotlin.time.measureTime
 object ReceiveTextMessage {
     private val goodBehaviourManager = GoodBehaviourManager()
     fun Dispatcher.receiveTextMessage(
-        spamFilter: CombineFilter,
+        spamFilters: HashMap<Long, CombineFilter>,
         logger: Logger
     ) {
         apply {
@@ -33,8 +33,9 @@ object ReceiveTextMessage {
                         )
 
                         if (!verifiedUsers.contains(message.from?.id) && !messageFromAdmin()) {
+                            val spamFilter = spamFilters.getOrDefault(chatId, CombineFilter())
                             val results = spamFilter.validate(text)
-                            when (results.maxBy { it.weight }) {
+                            when (results.maxByOrNull { it.weight }) {
                                 is SpamFilter.Result.Quarantine -> proceedQuarantine(
                                     this,
                                     logger,
@@ -51,13 +52,15 @@ object ReceiveTextMessage {
                                     results
                                 )
 
-                                is SpamFilter.Result.Pass -> {
+                                is SpamFilter.Result.Pass  -> {
                                     goodBehaviourManager.receiveMessage(message)
                                     logger.receivedMessage(
                                         message.chat.id,
                                         text
                                     )
                                 }
+
+                                null -> { }
                             }
                         }
 

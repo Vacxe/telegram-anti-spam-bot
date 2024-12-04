@@ -6,16 +6,15 @@ import com.github.kotlintelegrambot.dispatch
 import com.github.kotlintelegrambot.logging.LogLevel
 import io.github.vacxe.tgantispam.core.Files
 import io.github.vacxe.tgantispam.core.Logger
-import io.github.vacxe.tgantispam.core.actions.commands.*
 import io.github.vacxe.tgantispam.core.actions.commands.BanUser.banUser
 import io.github.vacxe.tgantispam.core.actions.commands.ReportSpam.reportSpam
 import io.github.vacxe.tgantispam.core.actions.commands.Systems.systems
 import io.github.vacxe.tgantispam.core.actions.commands.UnbanUser.unbanUser
 import io.github.vacxe.tgantispam.core.actions.commands.VerifyUser.verifyUser
-import io.github.vacxe.tgantispam.core.actions.events.ReceiveTextMessage
 import io.github.vacxe.tgantispam.core.actions.events.ReceiveTextMessage.receiveTextMessage
 import io.github.vacxe.tgantispam.core.configuration.Configuration
 import io.github.vacxe.tgantispam.core.data.Chat
+import io.github.vacxe.tgantispam.core.filters.CombineFilter
 import io.github.vacxe.tgantispam.core.filters.RemoteFilter
 import io.github.vacxe.tgantispam.core.filters.RussianSpamFilter
 import io.github.vacxe.tgantispam.core.filters.SpamFilter
@@ -25,6 +24,7 @@ import kotlin.system.exitProcess
 object Settings {
     var chats = HashSet<Chat>()
     lateinit var configuration: Configuration
+    val chatFiltersConfigurations: HashMap<Long, CombineFilter> = hashMapOf()
 }
 
 private val json = Json {
@@ -56,7 +56,7 @@ fun main() {
         listOf(RemoteFilter(it))
     } ?: emptyList()
 
-    val spamFilter = RussianSpamFilter(*additionalFilters.toTypedArray())
+    Settings.chatFiltersConfigurations[-1001181570704L] = RussianSpamFilter(*additionalFilters.toTypedArray())
 
     val bot = bot {
         token = Settings.configuration.token
@@ -66,7 +66,7 @@ fun main() {
         dispatch {
             apply {
                 systems()
-                receiveTextMessage(spamFilter, logger)
+                receiveTextMessage(Settings.chatFiltersConfigurations, logger)
                 reportSpam(logger)
                 verifyUser(json)
                 banUser()
