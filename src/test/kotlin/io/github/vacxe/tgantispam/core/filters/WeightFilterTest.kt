@@ -17,7 +17,7 @@ class WeightFilterTest {
                 LowercaseTransformer(),
             )
         )
-        assertTrue(filter.validate("Test no dollar") is SpamFilter.Decision.Pass)
-        assertTrue(filter.validate("Test $ dollars") is SpamFilter.Decision.Quarantine)
+        assertTrue(filter.validate("Test no dollar") is SpamFilter.Result.Pass)
+        assertTrue(filter.validate("Test $ dollars") is SpamFilter.Result.Quarantine)
     }
 }

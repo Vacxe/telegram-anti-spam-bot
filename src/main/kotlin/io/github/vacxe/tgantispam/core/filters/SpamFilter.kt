@@ -1,11 +1,11 @@
 package io.github.vacxe.tgantispam.core.filters
 
 interface SpamFilter {
-    fun validate(input: String): Decision
+    fun validate(input: String): Result
 
-    sealed class Decision(val weight: Int, open val message: String) {
-        data class Pass(override val message: String = "Passed") : Decision(0, message)
-        data class Quarantine(override val message: String) : Decision(1, message)
-        data class Ban(override val message: String) : Decision(Int.MAX_VALUE, message)
+    sealed class Result(val weight: Int, open val message: String) {
+        data class Pass(override val message: String = "Passed") : Result(0, message)
+        data class Quarantine(override val message: String) : Result(1, message)
+        data class Ban(override val message: String) : Result(Int.MAX_VALUE, message)
     }
 }

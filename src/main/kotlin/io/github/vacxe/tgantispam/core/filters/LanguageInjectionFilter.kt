@@ -15,7 +15,7 @@ class LanguageInjectionFilter(
     banWeight,
     inputTransformer
 ) {
-    override fun validateInput(input: String): SpamFilter.Decision {
+    override fun validateInput(input: String): SpamFilter.Result {
         val scanResult = input
             .replace(Regex("[!-/]|[:-@]|[\\[-`]|[{-~]\\."), " ") // Remove special symbols
             .replace("\n", " ")

@@ -10,25 +10,25 @@ abstract class BaseSpamFilter(
     protected val inputTransformer: Transformer = PassTransformer()
 ) : SpamFilter {
 
-    override fun validate(input: String): SpamFilter.Decision = validateInput(inputTransformer.transform(input))
-    abstract fun validateInput(input: String): SpamFilter.Decision
+    override fun validate(input: String): SpamFilter.Result = validateInput(inputTransformer.transform(input))
+    abstract fun validateInput(input: String): SpamFilter.Result
     fun report(
         weight: Int,
         message: String
-    ): SpamFilter.Decision {
+    ): SpamFilter.Result {
         val filterName = name ?: "Filter"
         return if (weight >= banWeight) {
             val resultMessage = "$filterName: Ban -> $message"
             println(resultMessage)
-            SpamFilter.Decision.Ban(resultMessage)
+            SpamFilter.Result.Ban(resultMessage)
         } else if (weight >= quarantineWeight) {
             val resultMessage = "$filterName: Quarantine -> $message"
             println(resultMessage)
-            SpamFilter.Decision.Quarantine(resultMessage)
+            SpamFilter.Result.Quarantine(resultMessage)
         } else {
             val resultMessage = "$filterName Passed"
             println(resultMessage)
-            SpamFilter.Decision.Pass(resultMessage)
+            SpamFilter.Result.Pass(resultMessage)
         }
     }
 }

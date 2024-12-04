@@ -3,8 +3,8 @@ package io.github.vacxe.tgantispam.core.filters
 open class CombineFilter(vararg filtersArgs: SpamFilter) {
 
     private val spamFilters: List<SpamFilter> = filtersArgs.toList()
-    fun validate(input: String): List<SpamFilter.Decision> {
-        val checks = arrayListOf<SpamFilter.Decision>()
+    fun validate(input: String): List<SpamFilter.Result> {
+        val checks = arrayListOf<SpamFilter.Result>()
 
         spamFilters.forEach {
             val result = it.validate(input)

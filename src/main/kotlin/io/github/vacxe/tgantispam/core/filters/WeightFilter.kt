@@ -15,7 +15,7 @@ open class WeightFilter(
     banWeight,
     inputTransformer
 ) {
-    override fun validateInput(input: String): SpamFilter.Decision {
+    override fun validateInput(input: String): SpamFilter.Result {
 
         var weight = 0
         val matches = hashSetOf<String>()

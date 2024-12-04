@@ -35,7 +35,7 @@ object ReceiveTextMessage {
                         if (!verifiedUsers.contains(message.from?.id) && !messageFromAdmin()) {
                             val results = spamFilter.validate(text)
                             when (results.maxBy { it.weight }) {
-                                is SpamFilter.Decision.Quarantine -> proceedQuarantine(
+                                is SpamFilter.Result.Quarantine -> proceedQuarantine(
                                     this,
                                     logger,
                                     chatConfiguration,
@@ -43,7 +43,7 @@ object ReceiveTextMessage {
                                     results
                                 )
 
-                                is SpamFilter.Decision.Ban -> proceedBan(
+                                is SpamFilter.Result.Ban -> proceedBan(
                                     this,
                                     logger,
                                     chatConfiguration,
@@ -51,7 +51,7 @@ object ReceiveTextMessage {
                                     results
                                 )
 
-                                is SpamFilter.Decision.Pass -> {
+                                is SpamFilter.Result.Pass -> {
                                     goodBehaviourManager.receiveMessage(message)
                                     logger.receivedMessage(
                                         message.chat.id,
@@ -82,7 +82,7 @@ fun proceedQuarantine(
     logger: Logger,
     chatConfiguration: Chat,
     message: Message,
-    reasons: List<SpamFilter.Decision>
+    reasons: List<SpamFilter.Result>
 ) {
     textHandlerEnvironment.apply {
         logger.detectedSpamMessage(
@@ -122,7 +122,7 @@ fun proceedBan(
     logger: Logger,
     chatConfiguration: Chat,
     message: Message,
-    reasons: List<SpamFilter.Decision>
+    reasons: List<SpamFilter.Result>
 ) {
     textHandlerEnvironment.apply {
         logger.detectedSpamMessage(

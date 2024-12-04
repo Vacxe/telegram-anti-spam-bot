@@ -15,8 +15,8 @@ class RussianSpamSpamFilterTest {
     fun detectSpamTest(message: String) {
         val result = filter.validate(message).maxBy { it.weight }
         assertTrue(
-            result is SpamFilter.Decision.Quarantine ||
-            result is SpamFilter.Decision.Ban
+            result is SpamFilter.Result.Quarantine ||
+            result is SpamFilter.Result.Ban
         )
     }
 }
