@@ -8,11 +8,11 @@ import java.io.File
 object Files {
     val configuration: File = File("data/config.yaml")
 
-    val filteredSpamFile: File =
-        getOrCreate(File("data/logger/filtered_spam_messages.txt"))
+    fun filteredSpamFile(chatId: Long): File =
+        getOrCreate(File("data/chats/$chatId/filtered_spam_messages.txt"))
 
-    val unfilteredSpamFile: File =
-        getOrCreate(File("data/logger/unfiltered_spam_messages.txt"))
+    fun unfilteredSpamFile(chatId: Long): File =
+        getOrCreate(File("data/chats/$chatId/unfiltered_spam_messages.txt"))
 
     val chats: File = getOrCreate(
         File("data/chats/chats.json"),

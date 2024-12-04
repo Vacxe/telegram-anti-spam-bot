@@ -24,7 +24,7 @@ class Logger(influxDbConfiguration: InfluxDbConfiguration? = null) {
         chatId: Long,
         message: String,
     ) {
-        appendMessageToFile(Files.filteredSpamFile, message)
+        appendMessageToFile(Files.filteredSpamFile(chatId), message)
         logEventToInflux(chatId, message, "SPAM")
     }
 
@@ -32,7 +32,7 @@ class Logger(influxDbConfiguration: InfluxDbConfiguration? = null) {
         chatId: Long,
         message: String
     ) {
-        appendMessageToFile(Files.unfilteredSpamFile, message)
+        appendMessageToFile(Files.unfilteredSpamFile(chatId), message)
         logEventToInflux(
             chatId, message,
             "SPAM_REPORT"
@@ -54,7 +54,8 @@ class Logger(influxDbConfiguration: InfluxDbConfiguration? = null) {
         file: File,
         message: String
     ) {
-        file.appendText(
+        val content = file.readLines().toMutableSet()
+        content.add(
             message
                 .replace("\n", " ")
                 .replace(
@@ -62,7 +63,7 @@ class Logger(influxDbConfiguration: InfluxDbConfiguration? = null) {
                     " "
                 )
         )
-        file.appendText("\n")
+        file.writeText(content.joinToString("\n"))
     }
 
     private fun logEventToInflux(
