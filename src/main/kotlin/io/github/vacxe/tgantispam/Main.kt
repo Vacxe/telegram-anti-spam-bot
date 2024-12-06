@@ -53,7 +53,7 @@ fun main() {
     )
 
     val additionalFilters: List<SpamFilter> = Settings.configuration.remoteFilterEndpoint?.let {
-        listOf(RemoteFilter(it))
+        listOf(RemoteFilter("Remote Spam Model", it))
     } ?: emptyList()
 
     Settings.chatFiltersConfigurations[-1001181570704L] = RussianSpamFilter(*additionalFilters.toTypedArray())

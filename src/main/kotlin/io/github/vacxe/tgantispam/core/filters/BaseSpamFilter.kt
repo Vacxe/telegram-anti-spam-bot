@@ -5,15 +5,15 @@ import io.github.vacxe.tgantispam.core.linguistic.Transformer
 
 abstract class BaseSpamFilter(
     private val name: String? = null,
-    private val quarantineWeight: Int = 1,
-    private val banWeight: Int = Int.MAX_VALUE,
-    protected val inputTransformer: Transformer = PassTransformer()
+    private val quarantineWeight: Double = 1.0,
+    private val banWeight: Double = Double.MAX_VALUE,
+    private val inputTransformer: Transformer = PassTransformer()
 ) : SpamFilter {
 
     override fun validate(input: String): SpamFilter.Result = validateInput(inputTransformer.transform(input))
     abstract fun validateInput(input: String): SpamFilter.Result
     fun report(
-        weight: Int,
+        weight: Double,
         message: String
     ): SpamFilter.Result {
         val filterName = name ?: "Filter"

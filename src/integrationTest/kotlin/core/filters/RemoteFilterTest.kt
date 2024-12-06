@@ -19,7 +19,7 @@ class RemoteFilterTest {
 
     private fun createFilter(): RemoteFilter {
         val endpoint = "http://${classifier.host}:${classifier.firstMappedPort}/check"
-        return RemoteFilter(endpoint)
+        return RemoteFilter("Remote Filter",endpoint)
     }
 
     @Test

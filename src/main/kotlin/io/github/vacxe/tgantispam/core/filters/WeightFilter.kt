@@ -11,8 +11,8 @@ open class WeightFilter(
     inputTransformer: Transformer = PassTransformer()
 ) : BaseSpamFilter(
     name,
-    quarantineWeight,
-    banWeight,
+    quarantineWeight.toDouble(),
+    banWeight.toDouble(),
     inputTransformer
 ) {
     override fun validateInput(input: String): SpamFilter.Result {
@@ -28,6 +28,6 @@ open class WeightFilter(
         }
 
         val message = "Weights sum $weight: $matches"
-        return report(weight, message)
+        return report(weight.toDouble(), message)
     }
 }

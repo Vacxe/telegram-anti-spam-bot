@@ -1,5 +1,6 @@
 package io.github.vacxe.tgantispam.core
 
+import io.github.vacxe.tgantispam.core.filters.RemoteFilter
 import io.github.vacxe.tgantispam.core.filters.RussianSpamFilter
 import io.github.vacxe.tgantispam.core.filters.SpamFilter
 import org.junit.jupiter.params.ParameterizedTest
@@ -16,7 +17,7 @@ class RussianSpamSpamFilterTest {
         val result = filter.validate(message).maxBy { it.weight }
         assertTrue(
             result is SpamFilter.Result.Quarantine ||
-            result is SpamFilter.Result.Ban
+                    result is SpamFilter.Result.Ban
         )
     }
 }

@@ -11,8 +11,8 @@ class LanguageInjectionFilter(
     inputTransformer: Transformer = PassTransformer()
 ) : BaseSpamFilter(
     name,
-    quarantineWeight,
-    banWeight,
+    quarantineWeight.toDouble(),
+    banWeight.toDouble(),
     inputTransformer
 ) {
     override fun validateInput(input: String): SpamFilter.Result {
@@ -34,6 +34,6 @@ class LanguageInjectionFilter(
         val weight = scanResult.size
         val message = "Found injection in: ${scanResult.joinToString(", ")}"
 
-        return report(weight, message)
+        return report(weight.toDouble(), message)
     }
 }
