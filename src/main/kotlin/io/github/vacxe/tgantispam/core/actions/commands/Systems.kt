@@ -52,15 +52,18 @@ object Systems {
                 if (messageFromAdmin()) {
                     Settings.chats.firstOrNull {
                         it.adminChatId == message.chat.id
-                    }?.id?.let { chatId ->
-                        bot.sendDocument(
-                            chatId = ChatId.fromId(chatId),
-                            TelegramFile.ByFile(Files.filteredSpamFile(chatId))
-                        )
-                        bot.sendDocument(
-                            chatId = ChatId.fromId(chatId),
-                            TelegramFile.ByFile(Files.unfilteredSpamFile(chatId))
-                        )
+                    }?.let { chat ->
+                        val adminChatId = chat.adminChatId
+                        if (adminChatId != null) {
+                            bot.sendDocument(
+                                chatId = ChatId.fromId(adminChatId),
+                                TelegramFile.ByFile(Files.filteredSpamFile(chat.id))
+                            )
+                            bot.sendDocument(
+                                chatId = ChatId.fromId(adminChatId),
+                                TelegramFile.ByFile(Files.unfilteredSpamFile(chat.id))
+                            )
+                        }
                     }
                 }
             }
