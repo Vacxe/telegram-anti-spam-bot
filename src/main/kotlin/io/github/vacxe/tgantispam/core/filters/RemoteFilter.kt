@@ -15,6 +15,7 @@ class RemoteFilter(
     private val endpoint: String,
     quarantineWeight: Double = 0.5,
     banWeight: Double = Double.MAX_VALUE,
+    private val minMessageLengthForCheck: Int = 0
 ) : BaseSpamFilter(
     name,
     quarantineWeight,
@@ -25,22 +26,26 @@ class RemoteFilter(
     private val json = Json { ignoreUnknownKeys = true }
 
     override fun validateInput(input: String): SpamFilter.Result {
-        try {
-            val request = Request.Builder()
-                .url("$endpoint?text=${input.encode()}")  // Add URL parameter
-                .get()
-                .build();
+        if (input.length > minMessageLengthForCheck)
+            try {
+                val request = Request.Builder()
+                    .url("$endpoint?text=${input.encode()}")  // Add URL parameter
+                    .get()
+                    .build();
 
-            client.newCall(request).execute().use { response ->
-                response.body?.string()?.let { jsonString ->
-                    val checkResponse = json.decodeFromString<CheckResponse>(jsonString)
-                    return report(checkResponse.spam.toDouble(), "Classification as Spam: ${checkResponse.spam.toDouble()}")
+                client.newCall(request).execute().use { response ->
+                    response.body?.string()?.let { jsonString ->
+                        val checkResponse = json.decodeFromString<CheckResponse>(jsonString)
+                        return report(
+                            checkResponse.spam.toDouble(),
+                            "Classification as Spam: ${checkResponse.spam.toDouble()}"
+                        )
+                    }
                 }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                System.err.println("Request to $endpoint failed, fallback to default value = IGNORE_MESSAGE")
             }
-        } catch (ex: Exception) {
-            ex.printStackTrace()
-            System.err.println("Request to $endpoint failed, fallback to default value = IGNORE_MESSAGE")
-        }
 
         return SpamFilter.Result.Pass()
     }

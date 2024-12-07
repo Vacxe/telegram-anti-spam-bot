@@ -107,12 +107,11 @@ class KakaoSpamFilter : CombineFilter(
             LowercaseTransformer(),
         )
     ),
-    /*
     RemoteFilter(
         name = "AI Spam Model",
-        endpoint = "192.168.1.100:8100",
-        quarantineWeight = 0.2,
-        banWeight = 0.95
+        endpoint = "http://192.168.1.100:8100/check",
+        quarantineWeight = 0.3,
+        banWeight = 0.98,
+        minMessageLengthForCheck = 40
     )
-    */
 )
