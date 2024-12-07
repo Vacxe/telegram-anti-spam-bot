@@ -12,6 +12,13 @@ class KakaoSpamFilter : CombineFilter(
         banWeight = 3,
         inputTransformer = RemoveUnicodeTransformer()
     ),
+    RemoteFilter(
+        name = "AI Spam Model",
+        endpoint = "http://192.168.1.100:8100/check",
+        quarantineWeight = 0.3,
+        banWeight = 0.98,
+        minMessageLengthForCheck = 40
+    ),
     WeightFilter(
         name = "Strong restricted words",
         restrictions = setOf(
@@ -107,11 +114,4 @@ class KakaoSpamFilter : CombineFilter(
             LowercaseTransformer(),
         )
     ),
-    RemoteFilter(
-        name = "AI Spam Model",
-        endpoint = "http://192.168.1.100:8100/check",
-        quarantineWeight = 0.3,
-        banWeight = 0.98,
-        minMessageLengthForCheck = 40
-    )
 )
