@@ -17,7 +17,6 @@ import kotlinx.serialization.json.Json
 import kotlin.time.measureTime
 
 object ReceiveTextMessage {
-    private val goodBehaviourManager = GoodBehaviourManager()
     fun Dispatcher.receiveTextMessage(
         spamFilters: HashMap<Long, CombineFilter>,
         logger: Logger
@@ -53,7 +52,7 @@ object ReceiveTextMessage {
                                 )
 
                                 is SpamFilter.Result.Pass  -> {
-                                    goodBehaviourManager.receiveMessage(message)
+                                    Settings.goodBehaviourManager.receiveMessage(message)
                                     logger.receivedMessage(
                                         message.chat.id,
                                         text

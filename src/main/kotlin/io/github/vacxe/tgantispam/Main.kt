@@ -18,13 +18,16 @@ import io.github.vacxe.tgantispam.core.filters.CombineFilter
 import io.github.vacxe.tgantispam.core.filters.RemoteFilter
 import io.github.vacxe.tgantispam.core.filters.RussianSpamFilter
 import io.github.vacxe.tgantispam.core.filters.SpamFilter
+import io.github.vacxe.tgantispam.core.logic.GoodBehaviourManager
 import kotlinx.serialization.json.Json
 import kotlin.system.exitProcess
 
 object Settings {
     var chats = HashSet<Chat>()
     lateinit var configuration: Configuration
+    lateinit var goodBehaviourManager: GoodBehaviourManager
     val chatFiltersConfigurations: HashMap<Long, CombineFilter> = hashMapOf()
+    lateinit var logger: Logger
 }
 
 private val json = Json {
@@ -48,9 +51,8 @@ fun main() {
     Settings.chats = json.decodeFromString(Files.chats.readText())
     println("Chats configs loaded for ${Settings.chats.size} chats...")
 
-    val logger = Logger(
-        Settings.configuration.influxDb
-    )
+    Settings.logger = Logger(Settings.configuration.influxDb)
+    Settings.goodBehaviourManager = GoodBehaviourManager(Settings.configuration.goodBehaviourMessageCount)
 
     val additionalFilters: List<SpamFilter> = Settings.configuration.remoteFilterEndpoint?.let {
         listOf(RemoteFilter("Remote Spam Model", it))
@@ -66,8 +68,8 @@ fun main() {
         dispatch {
             apply {
                 systems()
-                receiveTextMessage(Settings.chatFiltersConfigurations, logger)
-                reportSpam(logger)
+                receiveTextMessage(Settings.chatFiltersConfigurations, Settings.logger)
+                reportSpam(Settings.logger)
                 verifyUser(json)
                 banUser()
                 unbanUser()
