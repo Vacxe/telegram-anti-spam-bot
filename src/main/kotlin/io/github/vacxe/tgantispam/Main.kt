@@ -28,10 +28,9 @@ object Settings {
     lateinit var goodBehaviourManager: GoodBehaviourManager
     val chatFiltersConfigurations: HashMap<Long, CombineFilter> = hashMapOf()
     lateinit var logger: Logger
-}
-
-private val json = Json {
-    prettyPrint = true
+    val json = Json {
+        prettyPrint = true
+    }
 }
 
 fun main() {
@@ -48,7 +47,7 @@ fun main() {
     println("Configuration loaded...")
 
     println("Loading chats configs...")
-    Settings.chats = json.decodeFromString(Files.chats.readText())
+    Settings.chats = Settings.json.decodeFromString(Files.chats.readText())
     println("Chats configs loaded for ${Settings.chats.size} chats...")
 
     Settings.logger = Logger(Settings.configuration.influxDb)
@@ -70,7 +69,7 @@ fun main() {
                 systems()
                 receiveTextMessage(Settings.chatFiltersConfigurations, Settings.logger)
                 reportSpam(Settings.logger)
-                verifyUser(json)
+                verifyUser(Settings.json)
                 banUser()
                 unbanUser()
             }
