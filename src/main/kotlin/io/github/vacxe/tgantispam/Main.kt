@@ -15,9 +15,7 @@ import io.github.vacxe.tgantispam.core.actions.events.ReceiveTextMessage.receive
 import io.github.vacxe.tgantispam.core.configuration.Configuration
 import io.github.vacxe.tgantispam.core.data.Chat
 import io.github.vacxe.tgantispam.core.filters.CombineFilter
-import io.github.vacxe.tgantispam.core.filters.RemoteFilter
-import io.github.vacxe.tgantispam.core.filters.RussianSpamFilter
-import io.github.vacxe.tgantispam.core.filters.SpamFilter
+import io.github.vacxe.tgantispam.core.filters.KakaoSpamFilter
 import io.github.vacxe.tgantispam.core.logic.GoodBehaviourManager
 import kotlinx.serialization.json.Json
 import kotlin.system.exitProcess
@@ -52,12 +50,7 @@ fun main() {
 
     Settings.logger = Logger(Settings.configuration.influxDb)
     Settings.goodBehaviourManager = GoodBehaviourManager(Settings.configuration.goodBehaviourMessageCount)
-
-    val additionalFilters: List<SpamFilter> = Settings.configuration.remoteFilterEndpoint?.let {
-        listOf(RemoteFilter("Remote Spam Model", it))
-    } ?: emptyList()
-
-    Settings.chatFiltersConfigurations[-1001181570704L] = RussianSpamFilter(*additionalFilters.toTypedArray())
+    Settings.chatFiltersConfigurations[-1001181570704L] = KakaoSpamFilter()
 
     val bot = bot {
         token = Settings.configuration.token

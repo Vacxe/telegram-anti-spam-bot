@@ -41,6 +41,7 @@ class RemoteFilter(
             ex.printStackTrace()
             System.err.println("Request to $endpoint failed, fallback to default value = IGNORE_MESSAGE")
         }
+
         return SpamFilter.Result.Pass()
     }
 }

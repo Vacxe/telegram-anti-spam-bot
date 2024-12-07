@@ -9,5 +9,4 @@ data class Configuration(
     val debug: Boolean = false,
     val goodBehaviourMessageCount: Int = Int.MAX_VALUE,
     val influxDb: InfluxDbConfiguration? = null,
-    val remoteFilterEndpoint: String? = null
 )

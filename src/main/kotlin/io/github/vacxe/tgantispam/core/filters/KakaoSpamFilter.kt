@@ -4,7 +4,7 @@ import io.github.vacxe.tgantispam.core.linguistic.CombineTransformer
 import io.github.vacxe.tgantispam.core.linguistic.LowercaseTransformer
 import io.github.vacxe.tgantispam.core.linguistic.RemoveUnicodeTransformer
 
-class RussianSpamFilter(vararg additionalFilters: SpamFilter) : CombineFilter(
+class KakaoSpamFilter : CombineFilter(
     LanguageInjectionFilter(
         strictLanguage= Regex("[А-Яа-яЁё]"),
         name = "Injection in russian words",
@@ -17,7 +17,7 @@ class RussianSpamFilter(vararg additionalFilters: SpamFilter) : CombineFilter(
         restrictions = setOf(
             "\\d+\\s*[$]",
             "[$]\\s*\\d+",
-            "18\\s*\\+",
+            "18\\s*[+]",
             "usd",
             "eur",
             "доход",
@@ -32,6 +32,8 @@ class RussianSpamFilter(vararg additionalFilters: SpamFilter) : CombineFilter(
             "вознаграждение",
             "есть темка"
         ).map { Regex(it) }.toSet(),
+        quarantineWeight = 1,
+        banWeight = 2,
         inputTransformer = CombineTransformer(
             RemoveUnicodeTransformer(),
             LowercaseTransformer(),
@@ -98,12 +100,19 @@ class RussianSpamFilter(vararg additionalFilters: SpamFilter) : CombineFilter(
             "анкетирования",
             "\\d+",
             "смс",
-            "темка"
+            "темка",
         ).map { Regex(it) }.toSet(),
         inputTransformer = CombineTransformer(
             RemoveUnicodeTransformer(),
             LowercaseTransformer(),
         )
     ),
-    *additionalFilters
+    /*
+    RemoteFilter(
+        name = "AI Spam Model",
+        endpoint = "192.168.1.100:8100",
+        quarantineWeight = 0.2,
+        banWeight = 0.95
+    )
+    */
 )
