@@ -26,7 +26,7 @@ abstract class BaseSpamFilter(
             println(resultMessage)
             SpamFilter.Result.Quarantine(resultMessage)
         } else {
-            val resultMessage = "$filterName Passed"
+            val resultMessage = "$filterName Passed -> $message"
             println(resultMessage)
             SpamFilter.Result.Pass(resultMessage)
         }
