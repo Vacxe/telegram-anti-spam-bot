@@ -21,6 +21,7 @@ class GoodBehaviourManager(
                 goodBehaviorUsers.getOrDefault(userId to userId, 0) + 1
             )?.let { messagesFromUser ->
                 if (messagesFromUser >= goodBehaviourMessageCount) {
+                    println("Good Behaviour: $userId id $chatId")
                     val verifiedUsersFile = Files.verifiedUsers(chatId)
                     val verifiedUsers: HashSet<Long> = Json
                         .decodeFromString<Set<Long>>(verifiedUsersFile.readText())
