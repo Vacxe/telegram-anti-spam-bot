@@ -143,19 +143,14 @@ fun proceedQuarantine(
 
             bot.sendMessage(
                 ChatId.fromId(chatConfiguration.adminChatId),
-                text = "Message quarantined",
+                text = StringBuilder()
+                    .appendLine("Message Quarantined")
+                    .appendLine(reasons.joinToString("\n") { it.message })
+                    .toString(),
                 replyToMessageId = forwardedMessage.get().messageId,
                 disableNotification = true,
                 replyMarkup = inlineKeyboardMarkup
             )
-
-            if (Settings.configuration.debug) {
-                bot.sendMessage(
-                    ChatId.fromId(chatConfiguration.adminChatId),
-                    text = reasons.joinToString("\n") { it.message },
-                    disableNotification = true
-                )
-            }
         }
         bot.deleteMessage(ChatId.fromId(message.chat.id), message.messageId)
     }
@@ -185,8 +180,10 @@ fun proceedBan(
                 )
                 bot.sendMessage(
                     ChatId.fromId(chatConfiguration.adminChatId),
-                    text = "$userId Auto Banned in ${message.chat.id}"
-                            + reasons.joinToString("\n") { it.message },
+                    text = StringBuilder()
+                        .appendLine("$userId Auto Banned in ${message.chat.id}")
+                        .appendLine(reasons.joinToString("\n") { it.message })
+                        .toString(),
                     replyToMessageId = forwardedMessage.get().messageId,
                     disableNotification = true
                 )

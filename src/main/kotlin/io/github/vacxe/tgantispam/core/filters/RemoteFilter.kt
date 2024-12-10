@@ -31,7 +31,7 @@ class RemoteFilter(
                 val request = Request.Builder()
                     .url("$endpoint?text=${input.encode()}")  // Add URL parameter
                     .get()
-                    .build();
+                    .build()
 
                 client.newCall(request).execute().use { response ->
                     response.body?.string()?.let { jsonString ->
@@ -45,6 +45,7 @@ class RemoteFilter(
             } catch (ex: Exception) {
                 ex.printStackTrace()
                 System.err.println("Request to $endpoint failed, fallback to default value = IGNORE_MESSAGE")
+                return SpamFilter.Result.Pass("Request to $endpoint failed")
             }
 
         return SpamFilter.Result.Pass()
