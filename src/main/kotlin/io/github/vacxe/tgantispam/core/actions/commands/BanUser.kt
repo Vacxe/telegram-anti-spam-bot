@@ -12,12 +12,7 @@ object BanUser {
             command("ban_user") {
                 if (messageFromAdmin()) {
                     try {
-                        val userId = args.getOrNull(0)?.toLong()
-                            ?: try {
-                                message.replyToMessage?.text?.toLong()
-                            } catch (_: Exception) {
-                                null
-                            }
+                        val userId = message.replyToMessage?.forwardFrom?.id
 
                         Settings.chats
                             .filter { it.adminChatId == message.chat.id }
@@ -26,7 +21,7 @@ object BanUser {
                                     bot.banChatMember(chatId = ChatId.fromId(chat.id), userId = userId)
                                     bot.sendMessage(
                                         ChatId.fromId(chat.adminChatId),
-                                        text = "UserId: $userId banned in ${chat.id}",
+                                        text = "$userId banned",
                                         disableNotification = true
                                     )
                                 }

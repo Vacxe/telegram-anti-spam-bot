@@ -16,12 +16,8 @@ object VerifyUser {
         apply {
             command("verify_user") {
                 if (messageFromAdmin()) {
-                    val userId = args.getOrNull(0)?.toLong()
-                        ?: try {
-                            message.replyToMessage?.text?.toLong()
-                        } catch (_: Exception) {
-                            null
-                        }
+
+                    val userId = message.replyToMessage?.forwardFrom?.id
 
                     Settings.chats
                         .filter { it.adminChatId == message.chat.id }
@@ -38,7 +34,7 @@ object VerifyUser {
                                     )
                                     bot.sendMessage(
                                         ChatId.fromId(chat.adminChatId),
-                                        text = "UserId: $userId verified in ${chat.id}",
+                                        text = "$userId verified",
                                         disableNotification = true
                                     )
                                 }

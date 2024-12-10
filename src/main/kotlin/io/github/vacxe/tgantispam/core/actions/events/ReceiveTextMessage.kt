@@ -1,18 +1,23 @@
 package io.github.vacxe.tgantispam.core.actions.events
 
 import com.github.kotlintelegrambot.dispatcher.Dispatcher
+import com.github.kotlintelegrambot.dispatcher.callbackQuery
 import com.github.kotlintelegrambot.dispatcher.handlers.TextHandlerEnvironment
 import com.github.kotlintelegrambot.dispatcher.text
 import com.github.kotlintelegrambot.entities.ChatId
+import com.github.kotlintelegrambot.entities.InlineKeyboardMarkup
 import com.github.kotlintelegrambot.entities.Message
+import com.github.kotlintelegrambot.entities.keyboard.InlineKeyboardButton
 import io.github.vacxe.tgantispam.Settings
 import io.github.vacxe.tgantispam.core.Files
 import io.github.vacxe.tgantispam.core.Logger
 import io.github.vacxe.tgantispam.core.data.Chat
+import io.github.vacxe.tgantispam.core.delete
 import io.github.vacxe.tgantispam.core.filters.CombineFilter
 import io.github.vacxe.tgantispam.core.filters.SpamFilter
 import io.github.vacxe.tgantispam.core.logic.GoodBehaviourManager
 import io.github.vacxe.tgantispam.core.messageFromAdmin
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.time.measureTime
 
@@ -51,7 +56,7 @@ object ReceiveTextMessage {
                                     results
                                 )
 
-                                is SpamFilter.Result.Pass  -> {
+                                is SpamFilter.Result.Pass -> {
                                     Settings.goodBehaviourManager.receiveMessage(message)
                                     logger.receivedMessage(
                                         message.chat.id,
@@ -59,7 +64,7 @@ object ReceiveTextMessage {
                                     )
                                 }
 
-                                null -> { }
+                                null -> {}
                             }
                         }
 
@@ -74,6 +79,37 @@ object ReceiveTextMessage {
                         println("Message time processing: $it")
                     }
                 }
+            }
+        }
+
+        callbackQuery("banButton") {
+            callbackQuery.message?.let { message ->
+                val userId = message.replyToMessage?.forwardFrom?.id ?: return@callbackQuery
+                val chatId = message.replyToMessage?.forwardFromChat?.id ?: return@callbackQuery
+                bot.banChatMember(ChatId.fromId(chatId), userId)
+                message.delete(bot)
+                message.replyToMessage?.delete(bot)
+
+                println("Action (Ban): $userId in $chatId")
+            }
+        }
+
+        callbackQuery("approveButton") {
+            callbackQuery.message?.let { message ->
+                val userId = message.replyToMessage?.forwardFrom?.id ?: return@callbackQuery
+                val chatId = message.replyToMessage?.forwardFromChat?.id ?: return@callbackQuery
+
+                val verifiedUsersFile = Files.verifiedUsers(chatId)
+                val verifiedUsers: HashSet<Long> = Json
+                    .decodeFromString<Set<Long>>(verifiedUsersFile.readText())
+                    .toHashSet()
+                verifiedUsers.add(userId)
+                verifiedUsersFile.writeText(
+                    Settings.json.encodeToString(verifiedUsers)
+                )
+                message.delete(bot)
+                message.replyToMessage?.delete(bot)
+                println("Action (Approve): $userId in $chatId")
             }
         }
     }
@@ -100,11 +136,17 @@ fun proceedQuarantine(
                 disableNotification = true
             )
 
+            val inlineKeyboardMarkup = InlineKeyboardMarkup.create(
+                listOf(InlineKeyboardButton.CallbackData(text = "Ban", callbackData = "banButton")),
+                listOf(InlineKeyboardButton.CallbackData(text = "Approve", callbackData = "approveButton")),
+            )
+
             bot.sendMessage(
                 ChatId.fromId(chatConfiguration.adminChatId),
-                text = "${message.from?.id}",
+                text = "Message quarantined",
                 replyToMessageId = forwardedMessage.get().messageId,
                 disableNotification = true,
+                replyMarkup = inlineKeyboardMarkup
             )
 
             if (Settings.configuration.debug) {
@@ -143,13 +185,8 @@ fun proceedBan(
                 )
                 bot.sendMessage(
                     ChatId.fromId(chatConfiguration.adminChatId),
-                    text = "UserId: $userId **Auto Banned** in ${message.chat.id}]",
-                    replyToMessageId = forwardedMessage.get().messageId,
-                    disableNotification = true
-                )
-                bot.sendMessage(
-                    ChatId.fromId(chatConfiguration.adminChatId),
-                    text = reasons.joinToString("\n") { it.message },
+                    text = "$userId Auto Banned in ${message.chat.id}"
+                            + reasons.joinToString("\n") { it.message },
                     replyToMessageId = forwardedMessage.get().messageId,
                     disableNotification = true
                 )

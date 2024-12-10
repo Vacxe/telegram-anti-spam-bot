@@ -1,5 +1,7 @@
 package io.github.vacxe.tgantispam.core
 
+import com.github.kotlintelegrambot.Bot
+import com.github.kotlintelegrambot.bot
 import com.github.kotlintelegrambot.dispatcher.handlers.CommandHandlerEnvironment
 import com.github.kotlintelegrambot.dispatcher.handlers.TextHandlerEnvironment
 import com.github.kotlintelegrambot.entities.ChatId
@@ -37,3 +39,5 @@ fun CommandHandlerEnvironment.updateChatConfig(update: (Chat, Message) -> Chat) 
         )
     )
 }
+
+fun Message.delete(bot: Bot) = bot.deleteMessage(ChatId.fromId(this.chat.id), this.messageId)

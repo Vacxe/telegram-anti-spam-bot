@@ -11,12 +11,7 @@ object UnbanUser {
         apply {
             command("unban_user") {
                 if (messageFromAdmin()) {
-                    val userId = args.getOrNull(0)?.toLong()
-                        ?: try {
-                            message.replyToMessage?.text?.toLong()
-                        } catch (_: Exception) {
-                            null
-                        }
+                    val userId = message.replyToMessage?.forwardFrom?.id
 
                     Settings.chats
                         .filter { it.adminChatId == message.chat.id }
@@ -25,7 +20,7 @@ object UnbanUser {
                                 bot.unbanChatMember(chatId = ChatId.fromId(chat.id), userId = userId)
                                 bot.sendMessage(
                                     ChatId.fromId(chat.adminChatId),
-                                    text = "UserId: $userId unbanned in ${chat.id}",
+                                    text = "$userId unbanned",
                                     disableNotification = true
                                 )
                             }
