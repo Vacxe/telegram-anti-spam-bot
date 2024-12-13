@@ -32,7 +32,9 @@ class LanguageInjectionFilter(
                     null
             }
         val weight = scanResult.size
-        val message = "Found injection in: ${scanResult.joinToString(", ")}"
+        val message = if(scanResult.isNotEmpty())
+            "Found injection in: ${scanResult.joinToString(", ")}"
+        else "No Injection"
 
         return report(weight.toDouble(), message)
     }
