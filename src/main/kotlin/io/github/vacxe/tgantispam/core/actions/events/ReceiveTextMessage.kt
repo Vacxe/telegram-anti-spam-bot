@@ -199,6 +199,5 @@ private fun resultMessage(
     .appendLine("${UserIdManager.USER_ID_PREFIX}${message.from?.id}")
     .appendLine("${UserIdManager.CHAT_ID_PREFIX}${message.chat.id}")
     .appendLine("---")
-    .appendLine()
     .append(reasons.joinToString("\n") { it.message })
     .toString()
