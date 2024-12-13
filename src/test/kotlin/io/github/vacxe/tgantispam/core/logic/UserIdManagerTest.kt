@@ -51,7 +51,7 @@ class UserIdManagerTest {
     }
 
     @Test
-    fun getChatIdTest() {
+    fun getChatIdNegativeTest() {
         val input = StringBuilder()
             .appendLine("Action: Ban")
             .appendLine("User ID: foo")
@@ -61,5 +61,18 @@ class UserIdManagerTest {
 
         val result = UserIdManager.getChatIdFromText(input)
         kotlin.test.assertEquals(-321, result)
+    }
+
+    @Test
+    fun getChatIdPositiveTest() {
+        val input = StringBuilder()
+            .appendLine("Action: Ban")
+            .appendLine("User ID: foo")
+            .appendLine("Chat ID: 321")
+            .appendLine("---")
+            .toString()
+
+        val result = UserIdManager.getChatIdFromText(input)
+        kotlin.test.assertEquals(321, result)
     }
 }
