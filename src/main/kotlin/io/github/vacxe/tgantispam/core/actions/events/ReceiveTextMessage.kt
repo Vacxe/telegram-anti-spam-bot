@@ -15,7 +15,7 @@ import io.github.vacxe.tgantispam.core.data.Chat
 import io.github.vacxe.tgantispam.core.delete
 import io.github.vacxe.tgantispam.core.filters.CombineFilter
 import io.github.vacxe.tgantispam.core.filters.SpamFilter
-import io.github.vacxe.tgantispam.core.logic.GoodBehaviourManager
+import io.github.vacxe.tgantispam.core.logic.UserIdManager
 import io.github.vacxe.tgantispam.core.messageFromAdmin
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -84,7 +84,8 @@ object ReceiveTextMessage {
 
         callbackQuery("banButton") {
             callbackQuery.message?.let { message ->
-                val userId = message.replyToMessage?.forwardFrom?.id ?: return@callbackQuery
+                val userId = message.replyToMessage?.forwardFrom?.id ?: UserIdManager.getUserIdFromText(message.text)
+                ?: return@callbackQuery
                 val chatId = message.replyToMessage?.forwardFromChat?.id ?: return@callbackQuery
                 bot.banChatMember(ChatId.fromId(chatId), userId)
                 message.delete(bot)
@@ -96,7 +97,8 @@ object ReceiveTextMessage {
 
         callbackQuery("approveButton") {
             callbackQuery.message?.let { message ->
-                val userId = message.replyToMessage?.forwardFrom?.id ?: return@callbackQuery
+                val userId = message.replyToMessage?.forwardFrom?.id ?: UserIdManager.getUserIdFromText(message.text)
+                ?: return@callbackQuery
                 val chatId = message.replyToMessage?.forwardFromChat?.id ?: return@callbackQuery
 
                 val verifiedUsersFile = Files.verifiedUsers(chatId)
@@ -143,10 +145,7 @@ fun proceedQuarantine(
 
             bot.sendMessage(
                 ChatId.fromId(chatConfiguration.adminChatId),
-                text = StringBuilder()
-                    .appendLine("Message Quarantined")
-                    .appendLine(reasons.joinToString("\n") { it.message })
-                    .toString(),
+                text = resultMessage("Quarantined", message, reasons),
                 replyToMessageId = forwardedMessage.get().messageId,
                 disableNotification = true,
                 replyMarkup = inlineKeyboardMarkup
@@ -180,10 +179,7 @@ fun proceedBan(
                 )
                 bot.sendMessage(
                     ChatId.fromId(chatConfiguration.adminChatId),
-                    text = StringBuilder()
-                        .appendLine("$userId Auto Banned in ${message.chat.id}")
-                        .appendLine(reasons.joinToString("\n") { it.message })
-                        .toString(),
+                    text = resultMessage("Banned", message, reasons),
                     replyToMessageId = forwardedMessage.get().messageId,
                     disableNotification = true
                 )
@@ -193,3 +189,16 @@ fun proceedBan(
         bot.deleteMessage(ChatId.fromId(message.chat.id), message.messageId)
     }
 }
+
+private fun resultMessage(
+    action: String,
+    message: Message,
+    reasons: List<SpamFilter.Result>,
+): String = StringBuilder()
+    .appendLine("Action: $action")
+    .appendLine("${UserIdManager.USER_ID_PREFIX}${message.from?.id}")
+    .appendLine("${UserIdManager.CHAT_ID_PREFIX}${message.chat.id}")
+    .appendLine("---")
+    .appendLine()
+    .append(reasons.joinToString("\n") { it.message })
+    .toString()
