@@ -7,6 +7,7 @@ import com.github.kotlintelegrambot.logging.LogLevel
 import io.github.vacxe.tgantispam.core.Files
 import io.github.vacxe.tgantispam.core.Logger
 import io.github.vacxe.tgantispam.core.actions.commands.BanUser.banUser
+import io.github.vacxe.tgantispam.core.actions.commands.Captcha.captcha
 import io.github.vacxe.tgantispam.core.actions.commands.ReportSpam.reportSpam
 import io.github.vacxe.tgantispam.core.actions.commands.Systems.systems
 import io.github.vacxe.tgantispam.core.actions.commands.UnbanUser.unbanUser
@@ -65,6 +66,7 @@ fun main() {
                 verifyUser(Settings.json)
                 banUser()
                 unbanUser()
+                captcha()
             }
         }
     }
