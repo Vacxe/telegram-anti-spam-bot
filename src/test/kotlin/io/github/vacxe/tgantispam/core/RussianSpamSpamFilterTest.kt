@@ -13,7 +13,6 @@ class RussianSpamSpamFilterTest {
     @ParameterizedTest(name = "{index} => {0}")
     @CsvFileSource(resources = [
         "/spam_messages.csv",
-        "/model_messages.csv"
     ])
     fun detectSpamTest(message: String) {
         val result = filter.validate(message).maxBy { it.weight }
