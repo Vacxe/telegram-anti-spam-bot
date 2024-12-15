@@ -15,7 +15,7 @@ import io.github.vacxe.tgantispam.core.data.Chat
 import io.github.vacxe.tgantispam.core.delete
 import io.github.vacxe.tgantispam.core.filters.CombineFilter
 import io.github.vacxe.tgantispam.core.filters.SpamFilter
-import io.github.vacxe.tgantispam.core.logic.UserIdManager
+import io.github.vacxe.tgantispam.core.logic.IdManager
 import io.github.vacxe.tgantispam.core.messageFromAdmin
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -84,22 +84,23 @@ object ReceiveTextMessage {
 
         callbackQuery("banButton") {
             callbackQuery.message?.let { message ->
-                val userId = message.replyToMessage?.forwardFrom?.id ?: UserIdManager.getUserIdFromText(message.text)
+                val userId = message.replyToMessage?.forwardFrom?.id ?: IdManager.getUserIdFromText(message.text)
                 ?: return@callbackQuery
-                val chatId = message.replyToMessage?.forwardFromChat?.id ?: return@callbackQuery
+                val chatId = message.replyToMessage?.forwardFromChat?.id ?: IdManager.getChatIdFromText(message.text)
+                ?: return@callbackQuery
                 bot.banChatMember(ChatId.fromId(chatId), userId)
                 message.delete(bot)
                 message.replyToMessage?.delete(bot)
-
                 println("Action (Ban): $userId in $chatId")
             }
         }
 
         callbackQuery("approveButton") {
             callbackQuery.message?.let { message ->
-                val userId = message.replyToMessage?.forwardFrom?.id ?: UserIdManager.getUserIdFromText(message.text)
+                val userId = message.replyToMessage?.forwardFrom?.id ?: IdManager.getUserIdFromText(message.text)
                 ?: return@callbackQuery
-                val chatId = message.replyToMessage?.forwardFromChat?.id ?: return@callbackQuery
+                val chatId = message.replyToMessage?.forwardFromChat?.id ?: IdManager.getChatIdFromText(message.text)
+                ?: return@callbackQuery
 
                 val verifiedUsersFile = Files.verifiedUsers(chatId)
                 val verifiedUsers: HashSet<Long> = Json
@@ -196,8 +197,8 @@ private fun resultMessage(
     reasons: List<SpamFilter.Result>,
 ): String = StringBuilder()
     .appendLine("Action: $action")
-    .appendLine("${UserIdManager.USER_ID_PREFIX}${message.from?.id}")
-    .appendLine("${UserIdManager.CHAT_ID_PREFIX}${message.chat.id}")
+    .appendLine("${IdManager.USER_ID_PREFIX}${message.from?.id}")
+    .appendLine("${IdManager.CHAT_ID_PREFIX}${message.chat.id}")
     .appendLine("---")
     .append(reasons.joinToString("\n") { it.message })
     .toString()

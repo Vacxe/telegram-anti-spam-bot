@@ -1,6 +1,6 @@
 package io.github.vacxe.tgantispam.core.logic
 
-object UserIdManager {
+object IdManager {
     const val USER_ID_PREFIX = "User ID: "
     private val usedIdPattern = Regex("$USER_ID_PREFIX\\d+")
 

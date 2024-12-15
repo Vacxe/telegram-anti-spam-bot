@@ -2,7 +2,7 @@ package io.github.vacxe.tgantispam.core.logic
 
 import kotlin.test.Test
 
-class UserIdManagerTest {
+class IdManagerTest {
 
     @Test
     fun getUserIdTest() {
@@ -13,7 +13,7 @@ class UserIdManagerTest {
             .appendLine("---")
             .toString()
 
-        val result = UserIdManager.getUserIdFromText(input)
+        val result = IdManager.getUserIdFromText(input)
         kotlin.test.assertEquals(123L, result)
     }
 
@@ -26,7 +26,7 @@ class UserIdManagerTest {
             .appendLine("---")
             .toString()
 
-        val result = UserIdManager.getUserIdFromText(input)
+        val result = IdManager.getUserIdFromText(input)
         kotlin.test.assertEquals(null, result)
     }
 
@@ -39,14 +39,14 @@ class UserIdManagerTest {
             .appendLine("---")
             .toString()
 
-        val result = UserIdManager.getUserIdFromText(input)
+        val result = IdManager.getUserIdFromText(input)
         kotlin.test.assertEquals(null, result)
     }
 
     @Test
     fun getUserIdFromEmptyMessageTest() {
         val input = String()
-        val result = UserIdManager.getUserIdFromText(input)
+        val result = IdManager.getUserIdFromText(input)
         kotlin.test.assertEquals(null, result)
     }
 
@@ -59,7 +59,7 @@ class UserIdManagerTest {
             .appendLine("---")
             .toString()
 
-        val result = UserIdManager.getChatIdFromText(input)
+        val result = IdManager.getChatIdFromText(input)
         kotlin.test.assertEquals(-321, result)
     }
 
@@ -72,7 +72,7 @@ class UserIdManagerTest {
             .appendLine("---")
             .toString()
 
-        val result = UserIdManager.getChatIdFromText(input)
+        val result = IdManager.getChatIdFromText(input)
         kotlin.test.assertEquals(321, result)
     }
 }

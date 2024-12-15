@@ -4,7 +4,7 @@ import com.github.kotlintelegrambot.dispatcher.Dispatcher
 import com.github.kotlintelegrambot.dispatcher.command
 import com.github.kotlintelegrambot.entities.ChatId
 import io.github.vacxe.tgantispam.Settings
-import io.github.vacxe.tgantispam.core.logic.UserIdManager
+import io.github.vacxe.tgantispam.core.logic.IdManager
 import io.github.vacxe.tgantispam.core.messageFromAdmin
 
 object UnbanUser {
@@ -13,7 +13,7 @@ object UnbanUser {
             command("unban_user") {
                 if (messageFromAdmin()) {
                     val userId =
-                        message.replyToMessage?.forwardFrom?.id ?: UserIdManager.getUserIdFromText(message.text)
+                        message.replyToMessage?.forwardFrom?.id ?: IdManager.getUserIdFromText(message.text)
 
                     Settings.chats
                         .filter { it.adminChatId == message.chat.id }
