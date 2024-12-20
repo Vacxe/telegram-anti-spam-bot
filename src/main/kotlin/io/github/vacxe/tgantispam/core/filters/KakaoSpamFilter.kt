@@ -12,6 +12,13 @@ class KakaoSpamFilter : CombineFilter(
         banWeight = 3,
         inputTransformer = RemoveUnicodeTransformer()
     ),
+    WeightFilter(
+        name = "Emoji Limit",
+        restrictions = setOf(
+            Regex("[^\\p{L}\\p{M}\\p{N}\\p{P}\\p{Z}\\p{Cf}\\p{Cs}\\s[!-/][:-@][\\[-`][{-~]]")
+        ),
+        quarantineWeight = 5,
+        banWeight = 10),
     RemoteFilter(
         name = "AI Spam Model",
         endpoint = "http://192.168.1.100:8100/check",

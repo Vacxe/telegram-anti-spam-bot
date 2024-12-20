@@ -21,8 +21,9 @@ open class WeightFilter(
         val matches = hashSetOf<String>()
 
         restrictions.forEach {
-            if (it.containsMatchIn(input)) {
-                weight++
+            val findings = it.findAll(input).toList()
+            if (findings.isNotEmpty()) {
+                weight += findings.size
                 matches += it.pattern
             }
         }
