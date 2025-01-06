@@ -15,6 +15,7 @@ object Captcha {
     fun Dispatcher.captcha() {
         apply {
             chatMember {
+                println("UserId:${chatMember.newChatMember.user.id} updated in ${this.chatMember.chat.username}")
                 val notWasAMember = !(this.chatMember.oldChatMember.isMember ?: false)
                 val isMember = this.chatMember.newChatMember.isMember == true
                 if (isMember && notWasAMember) {

@@ -32,6 +32,7 @@ class KakaoSpamFilter : CombineFilter(
             "\\d+\\s*[$]",
             "[$]\\s*\\d+",
             "18\\s*[+]",
+            "\\s\\d{3}к",
             "usd",
             "eur",
             "доход",
@@ -44,7 +45,8 @@ class KakaoSpamFilter : CombineFilter(
             "оплата",
             "вознаграждением",
             "вознаграждение",
-            "есть темка"
+            "есть темка",
+            "выиграл",
         ).map { Regex(it) }.toSet(),
         quarantineWeight = 1,
         banWeight = 2,
