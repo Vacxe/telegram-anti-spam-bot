@@ -114,7 +114,7 @@ class KakaoSpamFilter : CombineFilter(
             "удаленка",
             "долларов",
             "анкетирования",
-            "\\d+",
+            "\\d{3,}",
             "смс",
             "темка",
         ).map { Regex(it) }.toSet(),
