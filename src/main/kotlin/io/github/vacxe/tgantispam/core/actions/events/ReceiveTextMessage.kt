@@ -57,7 +57,11 @@ object ReceiveTextMessage {
                                 )
 
                                 is SpamFilter.Result.Pass -> {
-                                    Settings.goodBehaviourManager.receiveMessage(message)
+                                    val chatId = message.chat.id
+                                    val userId = message.from?.id
+                                    if(chatId != null && userId != null) {
+                                        Settings.goodBehaviourManager.receiveMessageFrom(chatId, userId)
+                                    }
                                     logger.receivedMessage(
                                         message.chat.id,
                                         text

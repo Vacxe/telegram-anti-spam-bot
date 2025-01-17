@@ -50,7 +50,10 @@ fun main() {
     println("Chats configs loaded for ${Settings.chats.size} chats...")
 
     Settings.logger = Logger(Settings.configuration.influxDb)
+
+    println("Good behaviour message count: ${Settings.configuration.goodBehaviourMessageCount}")
     Settings.goodBehaviourManager = GoodBehaviourManager(Settings.configuration.goodBehaviourMessageCount)
+
     Settings.chatFiltersConfigurations[-1001181570704L] = KakaoSpamFilter()
 
     val bot = bot {
