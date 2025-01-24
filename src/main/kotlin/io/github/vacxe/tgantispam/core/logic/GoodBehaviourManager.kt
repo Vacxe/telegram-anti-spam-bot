@@ -5,13 +5,13 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class GoodBehaviourManager(
-    goodBehaviourMessageCount: Int = Int.MAX_VALUE,
+    private val goodBehaviourMessageCount: Int = Int.MAX_VALUE,
 ) {
-    private val goodBehaviorUsers = IncrementBarrier<Pair<Long, Long>>(goodBehaviourMessageCount)
+    private val counter = Counter<Pair<Long, Long>>()
 
     private val json = Json { prettyPrint = true }
     fun receiveMessageFrom(chatId: Long, userId: Long) {
-        if (goodBehaviorUsers.inc(chatId to userId)) {
+        if (counter.inc(chatId to userId) >= goodBehaviourMessageCount) {
             println("Good Behaviour: User:$userId in Chat:$chatId")
             val verifiedUsersFile = Files.verifiedUsers(chatId)
             val verifiedUsers: HashSet<Long> = Json
