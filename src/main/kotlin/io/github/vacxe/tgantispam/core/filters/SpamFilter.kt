@@ -1,6 +1,11 @@
 package io.github.vacxe.tgantispam.core.filters
 
-interface SpamFilter {
+import kotlinx.serialization.Polymorphic
+import kotlinx.serialization.Serializable
+
+@Polymorphic
+@Serializable
+sealed interface SpamFilter {
     fun validate(input: String): Result
 
     sealed class Result(val weight: Int, open val message: String) {

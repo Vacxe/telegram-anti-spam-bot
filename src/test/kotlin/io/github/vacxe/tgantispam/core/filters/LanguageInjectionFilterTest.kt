@@ -3,9 +3,8 @@ package io.github.vacxe.tgantispam.core.filters
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
-
 class LanguageInjectionFilterTest {
-    private val filter = LanguageInjectionFilter(Regex("[А-Яа-яЁё]"))
+    private val filter = LanguageInjectionFilter("[А-Яа-яЁё]")
 
     @Test
     fun testAllRussian(){

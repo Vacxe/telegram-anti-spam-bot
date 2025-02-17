@@ -1,14 +1,15 @@
 package io.github.vacxe.tgantispam.core.filters
 
-import io.github.vacxe.tgantispam.core.linguistic.PassTransformer
 import io.github.vacxe.tgantispam.core.linguistic.Transformer
+import kotlinx.serialization.Serializable
 
-abstract class BaseSpamFilter(
-    private val name: String? = null,
-    private val quarantineWeight: Double = 1.0,
-    private val banWeight: Double = Double.MAX_VALUE,
-    private val inputTransformer: Transformer = PassTransformer()
-) : SpamFilter {
+@Serializable
+abstract class BaseSpamFilter : SpamFilter {
+
+    abstract val name: String?
+    abstract val quarantineWeight: Double
+    abstract val banWeight: Double
+    abstract val inputTransformer: Transformer
 
     override fun validate(input: String): SpamFilter.Result = validateInput(inputTransformer.transform(input))
     abstract fun validateInput(input: String): SpamFilter.Result
