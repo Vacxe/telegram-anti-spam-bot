@@ -23,7 +23,7 @@ import kotlin.time.measureTime
 
 object ReceiveTextMessage {
     fun Dispatcher.receiveTextMessage(
-        spamFilters: HashMap<Long, CombineFilter>,
+        spamFilters: Map<Long, CombineFilter>,
         logger: Logger
     ) {
         apply {
@@ -37,7 +37,9 @@ object ReceiveTextMessage {
                         )
 
                         if (!verifiedUsers.contains(message.from?.id) && !messageFromAdmin()) {
-                            val spamFilter = spamFilters.getOrDefault(chatId, CombineFilter())
+                            val spamFilter = spamFilters.getOrDefault(chatId,
+                                CombineFilter(emptyList())
+                            )
                             val results = spamFilter.validate(text)
                             when (results.maxByOrNull { it.weight }) {
                                 is SpamFilter.Result.Quarantine -> proceedQuarantine(

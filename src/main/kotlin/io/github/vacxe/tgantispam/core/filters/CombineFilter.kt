@@ -1,12 +1,16 @@
 package io.github.vacxe.tgantispam.core.filters
 
-open class CombineFilter(vararg filtersArgs: SpamFilter) {
+import kotlinx.serialization.Polymorphic
+import kotlinx.serialization.Serializable
 
-    private val spamFilters: List<SpamFilter> = filtersArgs.toList()
+// TODO: make it polymorphic SpamFilter
+@Serializable
+data class CombineFilter(private val filters: List<@Polymorphic SpamFilter>) {
+
     fun validate(input: String): List<SpamFilter.Result> {
         val checks = arrayListOf<SpamFilter.Result>()
 
-        spamFilters.forEach {
+        filters.forEach {
             val result = it.validate(input)
             checks += result
             if (result.weight == Int.MAX_VALUE) {

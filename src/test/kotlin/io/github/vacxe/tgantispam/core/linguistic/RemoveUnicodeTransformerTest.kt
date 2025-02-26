@@ -9,7 +9,7 @@ class RemoveUnicodeTransformerTest {
     fun testUnicodeRemoved() {
         val input = "\uD83D\uDCBCВозможность дополнительного заработка\uD83D\uDCF2⏳"
 
-        val output = RemoveUnicodeTransformer().transform(input)
+        val output = RemoveUnicodeTransformer.transform(input)
         assertEquals("Возможность дополнительного заработка", output)
     }
 
@@ -17,7 +17,7 @@ class RemoveUnicodeTransformerTest {
     fun testDollarNotRemoved() {
         val input = "Symbol $ not removed"
 
-        val output = RemoveUnicodeTransformer().transform(input)
+        val output = RemoveUnicodeTransformer.transform(input)
         assertEquals("Symbol $ not removed", output)
     }
 
@@ -25,7 +25,7 @@ class RemoveUnicodeTransformerTest {
     fun testPlusNotRemoved() {
         val input = "Symbol + not removed"
 
-        val output = RemoveUnicodeTransformer().transform(input)
+        val output = RemoveUnicodeTransformer.transform(input)
         assertEquals("Symbol + not removed", output)
     }
 }

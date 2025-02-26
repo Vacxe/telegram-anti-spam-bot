@@ -1,6 +1,8 @@
 package io.github.vacxe.tgantispam
 
+import com.charleskorn.kaml.PolymorphismStyle
 import com.charleskorn.kaml.Yaml
+import com.charleskorn.kaml.YamlConfiguration
 import com.github.kotlintelegrambot.bot
 import com.github.kotlintelegrambot.dispatch
 import com.github.kotlintelegrambot.logging.LogLevel
@@ -15,27 +17,52 @@ import io.github.vacxe.tgantispam.core.actions.commands.VerifyUser.verifyUser
 import io.github.vacxe.tgantispam.core.actions.events.ReceiveTextMessage.receiveTextMessage
 import io.github.vacxe.tgantispam.core.configuration.Configuration
 import io.github.vacxe.tgantispam.core.data.Chat
-import io.github.vacxe.tgantispam.core.filters.CombineFilter
-import io.github.vacxe.tgantispam.core.filters.KakaoSpamFilter
+import io.github.vacxe.tgantispam.core.filters.LanguageInjectionFilter
+import io.github.vacxe.tgantispam.core.filters.RemoteFilter
+import io.github.vacxe.tgantispam.core.filters.SpamFilter
+import io.github.vacxe.tgantispam.core.filters.WeightFilter
+import io.github.vacxe.tgantispam.core.linguistic.*
 import io.github.vacxe.tgantispam.core.logic.GoodBehaviourManager
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
 import kotlin.system.exitProcess
 
 object Settings {
     var chats = HashSet<Chat>()
     lateinit var configuration: Configuration
     lateinit var goodBehaviourManager: GoodBehaviourManager
-    val chatFiltersConfigurations: HashMap<Long, CombineFilter> = hashMapOf()
     lateinit var logger: Logger
     val json = Json {
         prettyPrint = true
     }
+
+    private val serializersModule = SerializersModule {
+        polymorphic(SpamFilter::class) {
+            subclass(RemoteFilter::class, RemoteFilter.serializer())
+            subclass(WeightFilter::class, WeightFilter.serializer())
+            subclass(LanguageInjectionFilter::class, LanguageInjectionFilter.serializer())
+        }
+        polymorphic(Transformer::class) {
+            subclass(PassTransformer::class, PassTransformer.serializer())
+            subclass(RemoveUnicodeTransformer::class, RemoveUnicodeTransformer.serializer())
+            subclass(LowercaseTransformer::class, LowercaseTransformer.serializer())
+            subclass(CombineTransformer::class, CombineTransformer.serializer())
+        }
+    }
+
+    val yaml = Yaml(
+        configuration = YamlConfiguration(
+            polymorphismStyle = PolymorphismStyle.Property,
+        ),
+        serializersModule = serializersModule
+    )
 }
 
 fun main() {
     println("Init...")
     Settings.configuration = if (Files.configuration.exists()) {
-        Yaml.default.decodeFromString(
+        Settings.yaml.decodeFromString(
             Configuration.serializer(),
             Files.configuration.readText()
         )
@@ -54,8 +81,6 @@ fun main() {
     println("Good behaviour message count: ${Settings.configuration.goodBehaviourMessageCount}")
     Settings.goodBehaviourManager = GoodBehaviourManager(Settings.configuration.goodBehaviourMessageCount)
 
-    Settings.chatFiltersConfigurations[-1001181570704L] = KakaoSpamFilter()
-
     val bot = bot {
         token = Settings.configuration.token
         timeout = Settings.configuration.pollingTimeout
@@ -64,7 +89,7 @@ fun main() {
         dispatch {
             apply {
                 systems()
-                receiveTextMessage(Settings.chatFiltersConfigurations, Settings.logger)
+                receiveTextMessage(Settings.configuration.chats, Settings.logger)
                 reportSpam(Settings.logger)
                 verifyUser(Settings.json)
                 banUser()

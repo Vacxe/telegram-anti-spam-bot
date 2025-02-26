@@ -2,25 +2,24 @@ package io.github.vacxe.tgantispam.core.filters
 
 import io.github.vacxe.tgantispam.core.linguistic.PassTransformer
 import io.github.vacxe.tgantispam.core.linguistic.Transformer
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-open class WeightFilter(
-    private val restrictions: Set<Regex>,
-    name: String? = null,
-    quarantineWeight: Int = 1,
-    banWeight: Int = Int.MAX_VALUE,
-    inputTransformer: Transformer = PassTransformer()
-) : BaseSpamFilter(
-    name,
-    quarantineWeight.toDouble(),
-    banWeight.toDouble(),
-    inputTransformer
-) {
+@Serializable
+@SerialName("weight")
+data class WeightFilter(
+    private val restrictionPatterns: Set<String>,
+    override val name: String? = null,
+    override val quarantineWeight: Double = 1.0,
+    override val banWeight: Double = Double.MAX_VALUE,
+    override val inputTransformer: Transformer = PassTransformer,
+) : BaseSpamFilter() {
     override fun validateInput(input: String): SpamFilter.Result {
 
         var weight = 0
         val matches = hashSetOf<String>()
 
-        restrictions.forEach {
+        restrictionPatterns.map { Regex(it) }.forEach {
             val findings = it.findAll(input).toList()
             if (findings.isNotEmpty()) {
                 weight += findings.size

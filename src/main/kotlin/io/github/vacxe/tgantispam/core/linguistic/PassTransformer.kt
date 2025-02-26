@@ -1,5 +1,10 @@
 package io.github.vacxe.tgantispam.core.linguistic
 
-class PassTransformer : Transformer {
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+@SerialName("pass")
+data object PassTransformer : Transformer {
     override fun transform(input: String): String = input
 }
