@@ -3,6 +3,7 @@ package io.github.vacxe.tgantispam.core
 import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.dispatcher.handlers.CommandHandlerEnvironment
 import com.github.kotlintelegrambot.dispatcher.handlers.TextHandlerEnvironment
+import com.github.kotlintelegrambot.dispatcher.handlers.media.MediaHandlerEnvironment
 import com.github.kotlintelegrambot.entities.ChatId
 import com.github.kotlintelegrambot.entities.Message
 import io.github.vacxe.tgantispam.Settings
@@ -20,6 +21,10 @@ fun CommandHandlerEnvironment.messageFromAdmin(): Boolean = bot
     .getOrNull()
     ?.any { it.user.id == message.from?.id } ?: false
 
+fun MediaHandlerEnvironment<*>.messageFromAdmin(): Boolean = bot
+    .getChatAdministrators(ChatId.fromId(message.chat.id))
+    .getOrNull()
+    ?.any { it.user.id == message.from?.id } ?: false
 
 private val json = Json {
     prettyPrint = true
