@@ -22,6 +22,7 @@ data class RemoteFilter(
     override val quarantineWeight: Double = 0.5,
     override val banWeight: Double = Double.MAX_VALUE,
     override val inputTransformer: Transformer = PassTransformer,
+    override val enabled: Boolean = true,
 ) : BaseSpamFilter() {
     @Transient private val client = OkHttpClient()
     @Transient private val json = Json { ignoreUnknownKeys = true }
