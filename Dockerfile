@@ -1,9 +1,15 @@
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:23-jdk
 
-COPY build/distributions/tgantispam.tar /
+ARG BOT_VERSION
 
-RUN tar -xvf "tgantispam.tar" -C /usr/local
+RUN apt-get update
+RUN apt-get install -y wget unzip
 
-ENV PATH="${PATH}:/usr/local/tgantispam/bin/"
+# Install released Version from artefacts
+RUN wget -q "https://github.com/Vacxe/telegram-anti-spam-bot/releases/download/$BOT_VERSION/telegram-anti-spam-bot.tar" && \
+    tar -xvf "telegram-anti-spam-bot.tar" -C /usr/local &&  \
+    rm "telegram-anti-spam-bot.tar"
 
-ENTRYPOINT ["tgantispam"]
+ENV PATH="${PATH}:/usr/local/telegram-anti-spam-bot/bin/"
+
+ENTRYPOINT ["telegram-anti-spam-bot"]

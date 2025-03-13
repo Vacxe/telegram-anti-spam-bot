@@ -10,7 +10,7 @@ plugins {
 
 application {
     mainClass = "io.github.vacxe.tgantispam.MainKt"
-    applicationName = "tgantispam"
+    applicationName = "telegram-anti-spam-bot"
 }
 
 repositories {
