@@ -17,13 +17,13 @@ import io.github.vacxe.tgantispam.core.filters.CombineFilter
 import io.github.vacxe.tgantispam.core.filters.SpamFilter
 import io.github.vacxe.tgantispam.core.logic.IdManager
 import io.github.vacxe.tgantispam.core.messageFromAdmin
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.time.measureTime
 
 object ReceiveTextMessage {
     fun Dispatcher.receiveTextMessage(
-        spamFilters: Map<Long, CombineFilter>,
         logger: Logger
     ) {
         apply {
@@ -37,10 +37,12 @@ object ReceiveTextMessage {
                         )
 
                         if (!verifiedUsers.contains(message.from?.id) && !messageFromAdmin()) {
-                            val spamFilter = spamFilters.getOrDefault(chatId,
-                                CombineFilter(emptyList())
-                            )
-                            val results = spamFilter.validate(text)
+                            val results = Settings.spamFilters
+                                .getOrDefault(
+                                    message.chat.id,
+                                    CombineFilter(emptyList())
+                                )
+                                .validate(text)
                             when (results.maxByOrNull { it.weight }) {
                                 is SpamFilter.Result.Quarantine -> proceedQuarantine(
                                     this,
@@ -61,7 +63,7 @@ object ReceiveTextMessage {
                                 is SpamFilter.Result.Pass -> {
                                     val chatId = message.chat.id
                                     val userId = message.from?.id
-                                    if(chatId != null && userId != null) {
+                                    if (chatId != null && userId != null) {
                                         Settings.goodBehaviourManager.receiveMessageFrom(chatId, userId)
                                     }
                                     logger.receivedMessage(

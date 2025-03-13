@@ -28,7 +28,8 @@ fun TestSpamFilter() = CombineFilter(
             endpoint = "http://192.168.1.100:8100/check",
             quarantineWeight = 0.3,
             banWeight = 0.98,
-            minMessageLengthForCheck = 40
+            minMessageLengthForCheck = 40,
+            enabled = false
         ),
         WeightFilter(
             name = "Strong restricted words",

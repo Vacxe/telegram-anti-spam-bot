@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 data class Chat(
     val id: Long,
     val enabled: Boolean = false,
-    val adminChatId: Long? = null,
+    val adminChatId: Long? = null
 )

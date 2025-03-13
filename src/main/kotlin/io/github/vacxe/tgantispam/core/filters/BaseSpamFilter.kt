@@ -10,8 +10,14 @@ abstract class BaseSpamFilter : SpamFilter {
     abstract val quarantineWeight: Double
     abstract val banWeight: Double
     abstract val inputTransformer: Transformer
+    abstract val enabled: Boolean
 
-    override fun validate(input: String): SpamFilter.Result = validateInput(inputTransformer.transform(input))
+    override fun validate(input: String): SpamFilter.Result =
+        if (enabled)
+            validateInput(inputTransformer.transform(input))
+        else
+            SpamFilter.Result.Pass("Filter $name -> Disabled")
+
     abstract fun validateInput(input: String): SpamFilter.Result
     fun report(
         weight: Double,

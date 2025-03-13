@@ -13,6 +13,7 @@ data class LanguageInjectionFilter(
     override val quarantineWeight: Double = 1.0,
     override val banWeight: Double = Double.MAX_VALUE,
     override val inputTransformer: Transformer = PassTransformer,
+    override val enabled: Boolean = true,
 ) : BaseSpamFilter() {
 
     override fun validateInput(input: String): SpamFilter.Result {

@@ -1,7 +1,10 @@
 package io.github.vacxe.tgantispam.core
 
+import io.github.vacxe.tgantispam.Settings
+import io.github.vacxe.tgantispam.core.filters.CombineFilter
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import java.io.File
 
@@ -21,6 +24,25 @@ object Files {
             emptyList()
         )
     )
+
+    fun chatFiltersFile(chatId: Long): File = File("data/chats/$chatId/filters.yaml")
+
+    fun chatFilters(chatId: Long): CombineFilter =
+        chatFiltersFile(chatId).let {
+            if (it.exists()) {
+                try {
+                    Settings.yaml.decodeFromString(it.readText())
+                } catch (e: Exception) {
+                    println("Unable to load filters for chat ${chatId}: ${e.message}")
+                    CombineFilter(emptyList())
+                } finally {
+                    println("Filters for chat $chatId loaded successfully")
+                }
+            } else {
+                println("Unable to find filters for chat ${chatId}: empty filter applied")
+                CombineFilter(emptyList())
+            }
+        }
 
     fun verifiedUsers(chatId: Long) = getOrCreate(
         File("data/chats/$chatId/verified_users.json"),
