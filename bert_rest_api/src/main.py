@@ -3,14 +3,17 @@ from huggingface_hub import login
 from transformers import pipeline
 import os
 import json
+import torch
 
 model_id = "spamfighters/bert-base-uncased-finetuned-spam-detection"
 token = os.environ['HG_TOKEN']
 
+device = 0 if torch.cuda.is_available() else -1
+
 class ClassifierModel:
-    def __init__(self, token:str, model_name: str):
+    def __init__(self, token:str, model_name: str, device: int = -1):
         login(token)
-        self.classifier = pipeline("text-classification", model=model_name)
+        self.classifier = pipeline("text-classification", model=model_name, device=device)
 
     # Returns a dictionary in following format:
     # {"spam": 0.1, "ham": 0.9}
@@ -28,7 +31,7 @@ class ClassifierModel:
         return result
 
 app = FastAPI()
-classifier = ClassifierModel(token, model_id)
+classifier = ClassifierModel(token, model_id, device)
 
 HAM_LABEL = "LABEL_0"
 SPAM_LABEL = "LABEL_1"
