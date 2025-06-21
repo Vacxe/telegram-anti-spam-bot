@@ -4,11 +4,16 @@ from transformers import pipeline
 import os
 import json
 import torch
+import time
+import logging
 
 model_id = "spamfighters/bert-base-uncased-finetuned-spam-detection"
 token = os.environ['HG_TOKEN']
 
 device = 0 if torch.cuda.is_available() else -1
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class ClassifierModel:
     def __init__(self, token:str, model_name: str, device: int = -1):
@@ -18,6 +23,7 @@ class ClassifierModel:
     # Returns a dictionary in following format:
     # {"spam": 0.1, "ham": 0.9}
     def predict(self, text: str):
+        start_time = time.time()
         result = {}
         preds = self.classifier(text, top_k=None)
         for item in preds:
@@ -28,6 +34,9 @@ class ClassifierModel:
     
             if (label == SPAM_LABEL):
                 result["spam"] = score
+        
+        inference_time_ms = (time.time() - start_time) * 1000
+        logger.info(f"Inference completed in {inference_time_ms:.2f} ms")
         return result
 
 app = FastAPI()
