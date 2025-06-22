@@ -12,11 +12,18 @@ token = os.environ['HG_TOKEN']
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-device = 0 if torch.cuda.is_available() else -1
+
+# Check CUDA availability
+if torch.cuda.is_available():
+    device = 0
+    gpu_name = torch.cuda.get_device_name(0)
+    logger.info(f"CUDA is available. Using GPU: {gpu_name} (device=0).")
+else:
+    device = -1
+    logger.info("CUDA is NOT available. Using CPU (device=-1).")
 
 class ClassifierModel:
     def __init__(self, token:str, model_name: str, device: int = -1):
-        logger.info(f"CUDA Using GPU: {device}")
         login(token)
         self.classifier = pipeline("text-classification", model=model_name, device=device)
 
