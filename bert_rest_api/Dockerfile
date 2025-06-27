@@ -1,10 +1,13 @@
-FROM python:3.12-slim
+FROM nvidia/cuda:12.1.1-runtime-ubuntu20.04
 
-WORKDIR /app
+RUN apt-get update && \
+    apt-get install -y python3-pip python3-dev python-is-python3 && \
+    rm -rf /var/lib/apt/lists/*
 
-# Install dependencies
 RUN pip install --upgrade pip
 RUN pip install fastapi uvicorn torch transformers huggingface-hub
+
+WORKDIR /app
 
 # Copy application code
 COPY src/ .
