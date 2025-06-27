@@ -23,6 +23,8 @@ object Systems {
                     updateChatConfig { chat, _ ->
                         chat.copy(enabled = true)
                     }
+                    bot.sendMessage(ChatId.fromId(message.chat.id), "Bot enabled ${message.chat.id}")
+
                 }
             }
 
@@ -31,6 +33,7 @@ object Systems {
                     updateChatConfig { chat, _ ->
                         chat.copy(enabled = false)
                     }
+                    bot.sendMessage(ChatId.fromId(message.chat.id), "Bot disabled ${message.chat.id}")
                 }
             }
 
@@ -62,6 +65,22 @@ object Systems {
                             bot.sendDocument(
                                 chatId = ChatId.fromId(adminChatId),
                                 TelegramFile.ByFile(Files.unfilteredSpamFile(chat.id))
+                            )
+                        }
+                    }
+                }
+            }
+
+            command("get_filters") {
+                if (messageFromAdmin()) {
+                    Settings.chats.firstOrNull {
+                        it.adminChatId == message.chat.id
+                    }?.let { chat ->
+                        val adminChatId = chat.adminChatId
+                        if (adminChatId != null) {
+                            bot.sendDocument(
+                                chatId = ChatId.fromId(adminChatId),
+                                TelegramFile.ByFile(Files.chatFiltersFile(chat.id))
                             )
                         }
                     }
