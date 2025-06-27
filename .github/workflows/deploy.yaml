@@ -7,6 +7,7 @@ jobs:
   release-tar:
     name: Build release Tar
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
