@@ -1,4 +1,4 @@
-🛡️ SpamFighters – Open-Source Telegram Antispam Bot
+## 🛡️ SpamFighters – Open-Source Telegram Antispam Bot
 A powerful, modular antispam bot for Telegram with customizable filtering strategies per chat.
 Built for communities, powered by AI and flexible rules.
 
