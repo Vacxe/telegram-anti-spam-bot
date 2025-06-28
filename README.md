@@ -181,3 +181,49 @@ inputTransformer:
 
 * Matches explicit monetary patterns and aggressive financial bait.
 * Minimal weight allows stacking with other filters for high accuracy.
+
+### 🧾 Example of `filters.yaml` file
+
+```
+filters:
+  - type: language_injection
+    strictLanguagePattern: '[A-Za-Z]'
+    name: Injection in english words
+    quarantineWeight: 2
+    banWeight: 3
+    inputTransformer:
+      type: remove_unicode
+  - type: weight
+    restrictionPatterns:
+      - '[^\p{L}\p{M}\p{N}\p{P}\p{Z}\p{Cf}\p{Cs}\s[!-/][:-@][\[-`][{-~]]'
+    name: Emoji Limit
+    quarantineWeight: 5
+    banWeight: 10
+    inputTransformer:
+      type: pass
+  - type: remote_filter
+    endpoint: 'https://my.domain/endpoint'
+    minMessageLengthForCheck: 40
+    name: AI Spam Model
+    enabled: false
+    quarantineWeight: 0.3
+    banWeight: 0.98
+    inputTransformer:
+      type: pass
+  - type: weight
+    restrictionPatterns:
+      - '\d+\s*[$]'
+      - '[$]\s*\d+'
+      - '18\s*[+]'
+      - '\s\d{3}k'
+      - usd
+      - eur
+    name: Restricted words
+    quarantineWeight: 1
+    banWeight: 2
+    inputTransformer:
+      type: combine
+      transformers:
+        - type: remove_unicode
+        - type: lowercase
+```
