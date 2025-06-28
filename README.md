@@ -23,6 +23,7 @@ Built for communities, powered by AI and flexible rules.
   - [🤖 AI Spam Model Filter](#-ai-spam-model-filter)
   - [💰 Strong Restricted Words](#-strong-restricted-words)
 - [🧾 Example: Full `filters.yaml`](#-example-full-filtersyaml)
+- [☁️ Self-Hosted Deployment](#️-self-hosted-deployment)
 
 ---
 
@@ -239,3 +240,7 @@ filters:
         - type: remove_unicode
         - type: lowercase
 ```
+
+## ☁️ Self-Hosted Deployment
+
+You can self-host your own instance of the SpamFighters bot.
