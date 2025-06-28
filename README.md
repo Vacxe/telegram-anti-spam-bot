@@ -60,10 +60,10 @@ You're all set! 🛡️ The bot is now actively protecting your group and loggin
 
 ---
 
-🧪 Setup Filters
+## 🧪 Setup Filters
 After adding and enabling the bot in your chat, you can configure its behavior using custom filters.
 
-📥 Upload Filter Configuration
+## 📥 Upload Filter Configuration
 To use your own filter rules:
 
 Open the log/admin chat (the one you linked with /set_admin_chat_id).
@@ -72,8 +72,8 @@ Send the file filters.yaml as a document (not as text or photo).
 
 The bot will automatically load and apply the filters from the file.
 
-✅ You’ll see a confirmation message if the filters were loaded successfully.
-❌ If there’s an error in the file format, the bot will send a warning message.
+* ✅ You’ll see a confirmation message if the filters were loaded successfully.
+* ❌ If there’s an error in the file format, the bot will send a warning message.
 
 Here's a clear and detailed documentation section for the **Weight Filter**, based on the entries in your provided `filters.yaml`:
 
