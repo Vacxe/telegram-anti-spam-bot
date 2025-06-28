@@ -184,7 +184,7 @@ inputTransformer:
 
 ### 🧾 Example of `filters.yaml` file
 
-```
+```yaml
 filters:
   - type: language_injection
     strictLanguagePattern: '[A-Za-Z]'
