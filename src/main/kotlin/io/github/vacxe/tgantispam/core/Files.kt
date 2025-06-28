@@ -9,7 +9,7 @@ import kotlinx.serialization.json.Json
 import java.io.File
 
 object Files {
-    val configuration: File = File("data/config.yaml")
+    val configuration: File = File("data/config/config.yaml")
 
     fun filteredSpamFile(chatId: Long): File =
         getOrCreate(File("data/chats/$chatId/filtered_spam_messages.txt"))
