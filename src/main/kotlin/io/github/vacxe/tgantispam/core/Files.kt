@@ -9,23 +9,23 @@ import kotlinx.serialization.json.Json
 import java.io.File
 
 object Files {
-    val configuration: File = File("data/config/config.yaml")
+    val configuration: File = File("config/config.yaml")
 
     fun filteredSpamFile(chatId: Long): File =
-        getOrCreate(File("data/chats/$chatId/filtered_spam_messages.txt"))
+        getOrCreate(File("chats/$chatId/filtered_spam_messages.txt"))
 
     fun unfilteredSpamFile(chatId: Long): File =
-        getOrCreate(File("data/chats/$chatId/unfiltered_spam_messages.txt"))
+        getOrCreate(File("chats/$chatId/unfiltered_spam_messages.txt"))
 
     val chats: File = getOrCreate(
-        File("data/chats/chats.json"),
+        File("chats/chats.json"),
         Json.encodeToString(
             ListSerializer(String.serializer()),
             emptyList()
         )
     )
 
-    fun chatFiltersFile(chatId: Long): File = File("data/chats/$chatId/filters.yaml")
+    fun chatFiltersFile(chatId: Long): File = File("chats/$chatId/filters.yaml")
 
     fun chatFilters(chatId: Long): CombineFilter =
         chatFiltersFile(chatId).let {
@@ -45,7 +45,7 @@ object Files {
         }
 
     fun verifiedUsers(chatId: Long) = getOrCreate(
-        File("data/chats/$chatId/verified_users.json"),
+        File("chats/$chatId/verified_users.json"),
         Json.encodeToString(
             ListSerializer(Int.serializer()),
             emptyList()
