@@ -1,5 +1,3 @@
-Here is your final **`README.md`** for the SpamFighters project, complete and production-ready:
-
 # 🛡️ SpamFighters – Open-Source Telegram Antispam Bot
 
 A powerful, modular anti-spam bot for Telegram with customizable filtering strategies per chat.  
@@ -345,5 +343,3 @@ docker run -d \
 ```
 
 > Replace `$(pwd)` with full paths if you're not on Linux/macOS.
-
-Here’s a documentation section you can add to your `README.md` (or separate `docs/config.md`) explaining the structure and purpose of `config.yaml`:
