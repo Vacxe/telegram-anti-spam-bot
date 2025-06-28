@@ -24,6 +24,11 @@ Built for communities, powered by AI and flexible rules.
   - [💰 Strong Restricted Words](#-strong-restricted-words)
 - [🧾 Example: Full `filters.yaml`](#-example-full-filtersyaml)
 - [☁️ Self-Hosted Deployment](#️-self-hosted-deployment)
+  - [1. Create Your Own Bot](#1-create-your-own-bot)
+  - [2. Pull the Docker Image](#2-pull-the-docker-image)
+  - [3. Prepare Local Folders](#3-prepare-local-folders)
+  - [4. `config.yaml` – Bot Configuration File](#4-configyaml--bot-configuration-file)
+  - [5. Run the Container with Volume Mounts](#5-run-the-container-with-volumes)
 
 ---
 
@@ -244,3 +249,101 @@ filters:
 ## ☁️ Self-Hosted Deployment
 
 You can self-host your own instance of the SpamFighters bot.
+
+Thanks! I’ve added your requested steps to the **Setup Section** in the final `README.md`. Here's the updated section including how to create a bot with BotFather and disable group privacy:
+
+---
+
+### 1. 🤖 Create Your Own Bot
+
+If you're **self-hosting** or using your own bot instead of `@spam_eater_bot`, follow these steps:
+
+1. Open [@BotFather](https://t.me/botfather) on Telegram.
+2. Send `/newbot` and follow the prompts to name your bot.
+3. Copy the **bot token** provided at the end — you'll need it in your `config.yaml` or startup config.
+4. **Disable group privacy** by sending this to BotFather:
+
+Then select your bot and choose `Disable` — this allows the bot to **read group messages**, which is essential for spam detection.
+
+
+Here’s how to pull the `vacxe/telegram-anti-spam-bot` Docker image and run it while **mounting local folders** to the container’s `chats/` and `config/` directories.
+
+---
+
+### 📥 1. Pull the Docker Image
+
+```bash
+docker pull vacxe/telegram-anti-spam-bot
+```
+
+---
+
+### 📁 2. Prepare Local Folders
+
+Make two directories on your local system to store config and chat data:
+
+```bash
+mkdir -p ./config ./chats
+```
+
+* `./config` — where you place your config file.
+* `./chats` — used for local chat logs or persistent storage (if used by the bot).
+
+---
+### ⚙️ `config.yaml` – Bot Configuration File
+
+Example: `config/config.yaml`
+
+```yaml
+token: "<your_bot_token>"
+pollingTimeout: 10
+debug: false
+goodBehaviourMessageCount: 2
+
+# Optional: Metrics logging via InfluxDB
+influxDb:
+  url: "https://my.influx.db"
+  token: "<your_influxdb_token>"
+  org: "default"
+  bucket: "telegram_bot"
+
+```
+
+#### 🔧 Field Descriptions
+
+| Key                         | Description                                                                 |
+| --------------------------- | --------------------------------------------------------------------------- |
+| `token`                     | Your Telegram Bot API token from [@BotFather](https://t.me/botfather).      |
+| `pollingTimeout`            | Timeout (in seconds) for long polling. Recommended: `10–30`.                |
+| `debug`                     | Set to `true` to enable verbose debug logging.                              |
+| `goodBehaviourMessageCount` | Number of good messages to offset spam score. Helps reduce false positives. |
+
+🧩 Metrics Logging
+If you don’t use InfluxDB, simply omit the entire influxDb: block. The bot will run normally without sending metrics.
+
+| Key                         | Description                                                                 |
+| --------------------------- | --------------------------------------------------------------------------- |
+| `influxDb.url`              | URL to your [InfluxDB](https://www.influxdata.com/) instance for metrics.   |
+| `influxDb.token`            | Auth token for accessing InfluxDB.                                          |
+| `influxDb.org`              | InfluxDB organization name.                                                 |
+| `influxDb.bucket`           | Target bucket where bot metrics are stored.                                 |
+
+
+
+Ensure this file is available inside the container at `/config/config.yaml`, typically by mounting the folder:
+
+---
+
+### ▶️ 3. Run the Container with Volumes
+
+```bash
+docker run -d \
+  --name telegram-antispam-bot \
+  -v $(pwd)/config:/app/config \
+  -v $(pwd)/chats:/app/chats \
+  vacxe/telegram-anti-spam-bot
+```
+
+> Replace `$(pwd)` with full paths if you're not on Linux/macOS.
+
+Here’s a documentation section you can add to your `README.md` (or separate `docs/config.md`) explaining the structure and purpose of `config.yaml`:
