@@ -22,7 +22,7 @@ Built for communities, powered by AI and flexible rules.
   - [😊 Emoji Limit Filter](#-emoji-limit-filter)
   - [🤖 AI Spam Model Filter](#-ai-spam-model-filter)
   - [💰 Strong Restricted Words](#-strong-restricted-words)
-- [🧾 Example: Full `filters.yaml`](#-example-full-filtersyaml)
+- [🧾 `filters.yaml` - filters logic file](#-example-full-filtersyaml)
 - [☁️ Self-Hosted Deployment](#️-self-hosted-deployment)
   - [1. Create Your Own Bot](#1-create-your-own-bot)
   - [2. Pull the Docker Image](#2-pull-the-docker-image)
