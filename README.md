@@ -79,9 +79,10 @@ Here's a clear and detailed documentation section for the **Weight Filter**, bas
 
 ---
 
-## Filters
+## 🔍 Filters
 
 Each filter contains several common paramenters:
+* **`enable`**: Enable or disable the filter
 * **`quarantineWeight`**: Score contribution toward quarantine the user. (Should be lower than banWeight)
 * **`banWeight`**: Score contribution toward banning the user.
 * **`inputTransformer`**: Preprocesses the message before evaluation (e.g., `remove_unicode`, `lowercase`).
@@ -96,33 +97,81 @@ When a user sends a message:
 
 ---
 
-## ⚖️ Weight Filters
-
-**Weight filters** evaluate incoming messages against a list of keywords or regex patterns. If a message matches one or more patterns, it accumulates a **score**, and actions (quarantine or ban) are taken based on threshold values.
-
-This system allows flexible, layered spam detection based on the content severity.
-
-`weight` filter includes:
-
-* **`restrictionPatterns`**: A list of regex patterns or keywords to detect.
+Here’s a breakdown of the filters defined in your `filters.yaml`, formatted for your documentation. Each filter is categorized and described with clear YAML references and explanations.
 
 ---
 
-### 📂 Example: Common Words Filter
+### 1. 🌐 **Language Injection Detection** (`language_injection` filter example)
+
+```yaml
+type: language_injection
+name: 'Injection in russian words'
+strictLanguagePattern: '[A-Za-z]'
+quarantineWeight: 2
+banWeight: 3
+inputTransformer:
+  type: remove_unicode
+```
+
+* Detects messages that mix non-Latin symbols into Engligh text.
+* Helps stop injection-style spam using obfuscated characters.
+
+---
+
+### 2. 😊 **Emoji Limit Filter** (`weight` filter example for emoji)
 
 ```yaml
 type: weight
-name: 'Spam words'
+name: 'Emoji Limit'
 restrictionPatterns:
+  - '[^\\p{L}\\p{M}\\p{N}\\p{P}\\p{Z}\\p{Cf}\\p{Cs}\\s[!-/][:-@][\\[-`][{-~]]'
+quarantineWeight: 5
+banWeight: 10
+inputTransformer:
+  type: pass
+```
+
+* Detects excessive or suspicious use of emojis or non-standard Unicode.
+* High score leads to direct banning due to likely spam nature.
+
+---
+
+### 3. 🤖 **AI Spam Model Filter** (`remote_filter` filter example)
+
+```yaml
+type: remote_filter
+name: 'AI Spam Model'
+endpoint: <Your remote API endpoint>
+minMessageLengthForCheck: 40
+enabled: true
+quarantineWeight: 0.3
+banWeight: 0.98
+inputTransformer:
+  type: pass
+```
+
+* Sends longer messages to an external AI spam detection API.
+* Contributes partial weights depending on classification.
+
+---
+
+### 4. 💰 **Strong Restricted Words** (`weight` filter example)
+
+```yaml
+type: weight
+name: 'Strong restricted words'
+restrictionPatterns:
+  - '\\d+\\s*[$]'
+  - '[$]\\s*\\d+'
+  - '18\\s*[+]'
+  - '\\s\\d{3}k'
+  - 'usd'
+  - 'eur'
   - 'income'
   - 'bitcoin'
-  - 'money'
-  - 'remote'
-  - 'hiring'
-  - 'sms'
-  - '\\d{3,}'
-quarantineWeight: 3
-banWeight: 5
+
+quarantineWeight: 1
+banWeight: 2
 inputTransformer:
   type: combine
   transformers:
@@ -130,8 +179,5 @@ inputTransformer:
     - type: lowercase
 ```
 
-This filter will:
-
-* Preprocess messages by removing Unicode noise and converting text to lowercase.
-* Match messages containing any of the specified recruitment or spam keywords.
-* If the message will contains 3 of those matches it will be quarantined or banned if reach 5
+* Matches explicit monetary patterns and aggressive financial bait.
+* Minimal weight allows stacking with other filters for high accuracy.
